@@ -3,7 +3,7 @@ package com.restaurant_rest.controller;
 import com.restaurant_rest.entity.RefreshToken;
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.exception.RefreshTokenException;
-import com.restaurant_rest.model.EmailConfirm;
+import com.restaurant_rest.model.authetnticate.EmailConfirm;
 import com.restaurant_rest.model.authetnticate.AuthRequest;
 import com.restaurant_rest.model.authetnticate.EmailConfirmRequest;
 import com.restaurant_rest.model.authetnticate.JwtResponse;
@@ -49,7 +49,7 @@ public class AuthController {
             description = "Send your email on body request",
             summary = "Login",
             responses = {
-                    @ApiResponse(responseCode = "200",description = "Success"),
+                    @ApiResponse(responseCode = "200", description = "Success"),
                     @ApiResponse(responseCode = "400", description = "Bad Request"),
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
@@ -111,10 +111,12 @@ public class AuthController {
             accessToken = tokenUtils.createAccessToken(userDetails);
             refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
         }
-        return new ResponseEntity<>(JwtResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken.getToken())
-                .build(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                JwtResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken.getToken())
+                        .build(),
+                HttpStatus.OK);
     }
 
     @Operation(

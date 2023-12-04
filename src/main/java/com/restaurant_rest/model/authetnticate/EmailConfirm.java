@@ -1,4 +1,4 @@
-package com.restaurant_rest.model;
+package com.restaurant_rest.model.authetnticate;
 
 import lombok.Data;
 
