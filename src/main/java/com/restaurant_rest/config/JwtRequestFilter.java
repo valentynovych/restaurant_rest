@@ -22,7 +22,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtils jwtTokenUtils;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -37,8 +36,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 username = jwtTokenUtils.getUsername(jwt);
             } catch (ExpiredJwtException e) {
                 logger.debug("Lifetime token is expired");
+                throw new ExpiredJwtException(e.getHeader(), e.getClaims(), e.getMessage(), e.getCause());
             } catch (SignatureException e) {
                 logger.debug("Error signature");
+                throw new SignatureException(e.getMessage(), e.getCause());
             }
         }
 

@@ -6,42 +6,62 @@ import com.restaurant_rest.model.UserProfile;
 import com.restaurant_rest.repositoty.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserService {
 
     private final UserRepo userRepo;
-    private final UserDetailsServiceImpl userDetailsService;
 
     public UserProfile getUserById(Long userId) {
+        log.info("getUserById() -> start with id: " + userId);
         Optional<User> byId = userRepo.findById(userId);
         if (byId.isPresent()) {
             UserProfile userProfile = UserMapper.MAPPER.userToUserProfile(byId.get());
+            log.info("getUserById() -> user is present, return userProfile");
             return userProfile;
         } else {
+            log.info("getUserById() -> user is empty, throw new EntityNotFoundException()");
             throw new EntityNotFoundException(String.format("Користувача з id: %s не знайдено", userId));
         }
     }
 
     public User getUserByEmail(String email) {
+        log.info("getUserByEmail() -> start with email: " + email);
         User user;
         if (email != null && !email.isEmpty()) {
             Optional<User> byEmail = userRepo.findByEmail(email);
             if (byEmail.isPresent()) {
                 user = byEmail.get();
+                log.info("getUserByEmail() -> user is present, return user");
                 return user;
             }
         } else {
+            log.info("getUserByEmail() -> user is empty, throw new NullPointerException()");
             throw new NullPointerException("Email not must be null");
         }
         return null;
     }
 
-    public void saveUser(User userByEmail) {
+    public void saveUserConfirmCode(User userByEmail, String confirmCode) {
+        log.info("saveUserConfirmCode() -> start with id: " + userByEmail.getId());
+        userByEmail.setConfirmEmail(confirmCode);
+        log.info("saveUserConfirmCode() -> update user with confirmCode: " + confirmCode);
         userRepo.save(userByEmail);
+        log.info("saveUserConfirmCode() -> exit");
+    }
+
+    public void successLogin(User userByEmail) {
+        log.info("successLogin() -> start with email: " + userByEmail.getUsername());
+        userByEmail.setDateTimeOfLastLogin(Instant.now());
+        log.info("saveUserConfirmCode() -> clear confirmEmail code");
+        saveUserConfirmCode(userByEmail, null);
+        log.info("saveUserConfirmCode() -> exit");
     }
 }

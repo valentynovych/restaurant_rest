@@ -1,11 +1,11 @@
 package com.restaurant_rest.model.authetnticate;
 
-import lombok.Builder;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-@Builder
-public class JwtResponse {
-    private String accessToken;
+public class TokenRefreshRequest {
+    @NotBlank
     private String refreshToken;
 }
+

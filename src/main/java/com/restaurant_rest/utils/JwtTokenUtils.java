@@ -1,8 +1,8 @@
 package com.restaurant_rest.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.restaurant_rest.entity.User;
+import io.jsonwebtoken.*;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +15,24 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Log4j2
 public class JwtTokenUtils {
     @Value("${token.secret}")
     private String tokenSecret;
+    @Value("${token.lifetime.accessToken}")
+    private Duration accessTokenLifetime;
+    @Value("${token.lifetime.refreshToken}")
+    private Duration refreshTokenLifetime;
 
-    @Value("${token.lifetimeHour}")
-    private Duration tokenLifetime;
+    public String createAccessToken(UserDetails userDetails) {
+        return generateToken(userDetails, accessTokenLifetime);
+    }
 
-    public String generateToken(UserDetails userDetails) {
+    public String createRefreshToken(UserDetails userDetails) {
+        return generateToken(userDetails, refreshTokenLifetime);
+    }
+
+    public String generateToken(UserDetails userDetails, Duration duration) {
         Map<String, Object> claims = new HashMap<>();
         List<String> roleList = userDetails.getAuthorities()
                 .stream()
@@ -31,7 +41,7 @@ public class JwtTokenUtils {
         claims.put("roles", roleList);
 
         Date issuedDate = new Date();
-        Date expiredDate = new Date(issuedDate.getTime() + tokenLifetime.toMillis());
+        Date expiredDate = new Date(issuedDate.getTime() + duration.toMillis());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -55,4 +65,26 @@ public class JwtTokenUtils {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public boolean validateJwtToken(String jwtToken) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(tokenSecret)
+                    .parseClaimsJws(jwtToken);
+            return true;
+        } catch (SignatureException e) {
+            log.error("Invalid JWT signature: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("JWT claims string is empty: {}", e.getMessage());
+        }
+        return false;
+    }
+
+
 }
