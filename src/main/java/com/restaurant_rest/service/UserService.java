@@ -2,7 +2,8 @@ package com.restaurant_rest.service;
 
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.mapper.UserMapper;
-import com.restaurant_rest.model.UserProfile;
+import com.restaurant_rest.model.user.UserProfileRequest;
+import com.restaurant_rest.model.user.UserProfileResponse;
 import com.restaurant_rest.repositoty.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,11 @@ public class UserService {
 
     private final UserRepo userRepo;
 
-    public UserProfile getUserById(Long userId) {
+    public UserProfileResponse getUserById(Long userId) {
         log.info("getUserById() -> start with id: " + userId);
         Optional<User> byId = userRepo.findById(userId);
         if (byId.isPresent()) {
-            UserProfile userProfile = UserMapper.MAPPER.userToUserProfile(byId.get());
+            UserProfileResponse userProfile = UserMapper.MAPPER.userToUserProfile(byId.get());
             log.info("getUserById() -> user is present, return userProfile");
             return userProfile;
         } else {
@@ -43,10 +44,21 @@ public class UserService {
                 return user;
             }
         } else {
-            log.info("getUserByEmail() -> user is empty, throw new NullPointerException()");
+            log.error("getUserByEmail() -> user is empty, throw new NullPointerException()");
             throw new NullPointerException("Email not must be null");
         }
         return null;
+    }
+
+    public UserProfileResponse getUserProfile(String email) {
+        log.info("getUserProfile() -> start with email: " + email);
+        Optional<User> byEmail = userRepo.findByEmail(email);
+        User user = byEmail.orElseThrow(EntityNotFoundException::new);
+        log.info("getUserProfile() -> map User to UserProfile");
+        UserProfileResponse profile = UserMapper.MAPPER.userToUserProfile(user);
+        log.info("getUserProfile() -> exit");
+        return profile;
+
     }
 
     public void saveUserConfirmCode(User userByEmail, String confirmCode) {
@@ -63,5 +75,9 @@ public class UserService {
         log.info("saveUserConfirmCode() -> clear confirmEmail code");
         saveUserConfirmCode(userByEmail, null);
         log.info("saveUserConfirmCode() -> exit");
+    }
+
+    public void updateUserProfile(String username, UserProfileRequest profileRequest) {
+
     }
 }

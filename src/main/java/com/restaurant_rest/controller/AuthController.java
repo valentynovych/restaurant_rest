@@ -54,7 +54,7 @@ public class AuthController {
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
     @PostMapping("signin")
-    public ResponseEntity<?> login(@RequestBody AuthRequest email) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest email) {
         try {
             User userByEmail = userService.getUserByEmail(email.getEmail());
             String confirmCode = mailService.sendEmailConfirmCode(userByEmail.getEmail()).get();
@@ -84,7 +84,7 @@ public class AuthController {
                     @ApiResponse(responseCode = "404", description = "User Not Found")
             })
     @PostMapping("/confirmEmail")
-    public ResponseEntity<?> confirmEmailCode(@RequestBody EmailConfirm confirm) {
+    public ResponseEntity<?> confirmEmailCode(@Valid @RequestBody EmailConfirm confirm) {
         String accessToken = null;
         RefreshToken refreshToken = null;
 
