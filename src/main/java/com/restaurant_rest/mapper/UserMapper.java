@@ -1,10 +1,9 @@
 package com.restaurant_rest.mapper;
 
 import com.restaurant_rest.entity.User;
-import com.restaurant_rest.model.UserProfile;
+import com.restaurant_rest.model.user.UserProfileResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -19,5 +18,5 @@ public interface UserMapper {
     @Mapping(target = "activeBonuses", source = "userDetails.activeBonuses")
     @Mapping(target = "amountOfOrders", source = "totalOrders")
     @Mapping(target = "facebookUsername", source = "userDetails.facebookUsername")
-    UserProfile userToUserProfile(User user);
+    UserProfileResponse userToUserProfile(User user);
 }

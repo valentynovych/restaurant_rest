@@ -1,11 +1,11 @@
-package com.restaurant_rest.model;
+package com.restaurant_rest.model.user;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class UserProfile {
+public class UserProfileResponse {
     private Long userId;
     private String fullName;
     private String phone;
@@ -14,4 +14,5 @@ public class UserProfile {
     private String email;
     private Integer amountOfOrders;
     private Integer activeBonuses;
+    private String password;
 }
