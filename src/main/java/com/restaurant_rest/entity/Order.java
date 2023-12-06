@@ -31,6 +31,7 @@ public class Order {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Promotion> usedPromotion;
     private Integer usedBonuses;
+    private Integer accruedBonuses;
     private String payment;
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private Address address;
