@@ -1,7 +1,7 @@
 package com.restaurant_rest.controller;
 
-import com.restaurant_rest.model.product.ProductResponse;
 import com.restaurant_rest.model.product.ProductCriteria;
+import com.restaurant_rest.model.product.ProductResponse;
 import com.restaurant_rest.model.product.ProductShortResponse;
 import com.restaurant_rest.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,15 +23,17 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/get-all-products")
-    public Page<ProductShortResponse> getAllProducts(@Parameter(example = "0") @RequestParam int page,
-                                                     @Parameter(example = "10") @RequestParam int pageSize) {
+    @GetMapping("/all-products")
+    public Page<ProductShortResponse> getAllProducts(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize) {
         return productService.getAllProducts(page, pageSize);
     }
 
-    @GetMapping("/get-is-novelty")
-    public Page<ProductShortResponse> getNoveltyProducts(@Parameter(example = "0") @RequestParam int page,
-                                                         @Parameter(example = "10") @RequestParam int pageSize) {
+    @GetMapping("/novelty")
+    public Page<ProductShortResponse> getNoveltyProducts(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize) {
         return productService
                 .getProductsByCriteria(
                         page,
@@ -42,9 +44,10 @@ public class ProductController {
                                 .build());
     }
 
-    @GetMapping("/get-is-promotional")
-    public Page<ProductShortResponse> getPromotionalProducts(@Parameter(example = "0") @RequestParam int page,
-                                                             @Parameter(example = "10") @RequestParam int pageSize) {
+    @GetMapping("/promotional")
+    public Page<ProductShortResponse> getPromotionalProducts(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize) {
         return productService
                 .getProductsByCriteria(
                         page,
@@ -55,10 +58,11 @@ public class ProductController {
                                 .build());
     }
 
-    @GetMapping("/get-by-category/{categoryId}")
-    public Page<ProductShortResponse> getProductsByCategory(@Parameter(example = "0") @RequestParam int page,
-                                                            @Parameter(example = "10") @RequestParam int pageSize,
-                                                            @Parameter(example = "1") @PathVariable long categoryId) {
+    @GetMapping("/by-category/{categoryId}")
+    public Page<ProductShortResponse> getProductsByCategory(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize,
+            @Parameter(example = "1") @PathVariable long categoryId) {
         return productService
                 .getProductsByCriteria(
                         page,
@@ -69,10 +73,11 @@ public class ProductController {
                                 .build());
     }
 
-    @GetMapping("/get-by-subcategory/{subcategoryId}")
-    public Page<ProductShortResponse> getProductsBySubcategory(@Parameter(example = "0") @RequestParam int page,
-                                                               @Parameter(example = "10") @RequestParam int pageSize,
-                                                               @Parameter(example = "1") @PathVariable long subcategoryId) {
+    @GetMapping("/by-subcategory/{subcategoryId}")
+    public Page<ProductShortResponse> getProductsBySubcategory(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize,
+            @Parameter(example = "1") @PathVariable long subcategoryId) {
         return productService
                 .getProductsByCriteria(
                         page,
@@ -84,9 +89,10 @@ public class ProductController {
     }
 
 
-    @GetMapping("/get-is-ingredient")
-    public Page<ProductShortResponse> getProductsIsIngredient(@Parameter(example = "0") @RequestParam int page,
-                                                              @Parameter(example = "10") @RequestParam int pageSize) {
+    @GetMapping("/ingredients")
+    public Page<ProductShortResponse> getProductsIsIngredient(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize) {
         return productService
                 .getProductsByCriteria(
                         page,
@@ -96,7 +102,22 @@ public class ProductController {
                                 .build());
     }
 
-    @GetMapping("/get-product/{id}")
+    @GetMapping("/ingredients-for/{mainCategoryId}")
+    public Page<ProductShortResponse> getIngredientByForMainCategory(
+            @Parameter(example = "0") @RequestParam int page,
+            @Parameter(example = "10") @RequestParam int pageSize,
+            @Parameter(example = "1") @PathVariable long mainCategoryId) {
+        return productService
+                .getProductsByCriteria(
+                        page,
+                        pageSize,
+                        ProductCriteria.builder()
+                                .isIngredients(true)
+                                .byCategoryId(mainCategoryId)
+                                .build());
+    }
+
+    @GetMapping("/product/{id}")
     public ResponseEntity<?> getProductById(@Parameter(example = "1") @PathVariable long id) {
         try {
             ProductResponse productById = productService.getProductById(id);

@@ -24,6 +24,15 @@ public class ProductSpecification implements Specification<Product> {
 
         List<Predicate> predicates = new ArrayList<>();
 
+        if (productCriteria.isIngredients() && productCriteria.getByCategoryId() != null) {
+            MainCategory mainCategory = new MainCategory();
+            mainCategory.setId(productCriteria.getByCategoryId());
+            predicates.add(
+                    criteriaBuilder.and(criteriaBuilder.equal(root.get("isIngredient"), true),
+                            criteriaBuilder.equal(root.get("forMainCategory"), mainCategory)));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        }
+
         if (productCriteria.isIngredients()) {
             predicates.add(criteriaBuilder.equal(root.get("isIngredient"), true));
         }
@@ -32,7 +41,6 @@ public class ProductSpecification implements Specification<Product> {
             predicates.add(
                     criteriaBuilder.and(criteriaBuilder.equal(root.get("promotionIsActive"), true),
                             criteriaBuilder.equal(root.get("isIngredient"), false)));
-
         }
 
         if (productCriteria.isNovelty()) {
