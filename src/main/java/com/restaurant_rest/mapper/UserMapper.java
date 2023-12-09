@@ -2,6 +2,7 @@ package com.restaurant_rest.mapper;
 
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.model.user.UserProfileResponse;
+import com.restaurant_rest.model.user.UserShort;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -19,4 +20,8 @@ public interface UserMapper {
     @Mapping(target = "amountOfOrders", source = "totalOrders")
     @Mapping(target = "facebookUsername", source = "userDetails.facebookUsername")
     UserProfileResponse userToUserProfile(User user);
+
+    UserShort userToUserShort(User user);
+
+    User userShortToUser(UserShort userShort);
 }

@@ -40,10 +40,10 @@ public class MailService {
             request.setMethod(Method.POST);
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
-            Response response = sendGrid.api(request);
-            System.out.println(response.getStatusCode());
-            System.out.println(response.getBody());
-            System.out.println(response.getHeaders());
+//            Response response = sendGrid.api(request);
+//            System.out.println(response.getStatusCode());
+//            System.out.println(response.getBody());
+//            System.out.println(response.getHeaders());
             return CompletableFuture.completedFuture(confirmCode);
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage(), ex.getCause());

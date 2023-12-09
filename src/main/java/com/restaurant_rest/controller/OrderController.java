@@ -1,6 +1,6 @@
 package com.restaurant_rest.controller;
 
-import com.restaurant_rest.model.order.OrderResponse;
+import com.restaurant_rest.model.order.OrderShortResponse;
 import com.restaurant_rest.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,10 +36,10 @@ public class OrderController {
             @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content()),
             @ApiResponse(description = "User Not Found", responseCode = "404", content = @Content())})
     @GetMapping("/user-orders")
-    public Page<OrderResponse> getUserOrders(Principal principal,
-                                             @Parameter(description = "int value, page number",
+    public Page<OrderShortResponse> getUserOrders(Principal principal,
+                                                  @Parameter(description = "int value, page number",
                                                      example = "0") @RequestParam int page,
-                                             @Parameter(description = "int value, page size",
+                                                  @Parameter(description = "int value, page size",
                                                      example = "10") @RequestParam int pageSize) {
         return orderService.getUserOrders(principal.getName(), page, pageSize);
     }
