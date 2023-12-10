@@ -1,8 +1,6 @@
 package com.restaurant_rest.controller;
 
 import com.restaurant_rest.entity.enums.OrderStatus;
-import com.restaurant_rest.model.CustomError;
-import com.restaurant_rest.model.SimpleError;
 import com.restaurant_rest.model.order.OrderDetails;
 import com.restaurant_rest.model.order.OrderResponse;
 import com.restaurant_rest.model.order.OrderShortResponse;
@@ -11,6 +9,7 @@ import com.restaurant_rest.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -40,8 +39,8 @@ public class OrderController {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = OrderResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))})
+                    @Content(mediaType = "application/json", examples =
+                    @ExampleObject(value = "{\"error\":\"UNAUTHORIZED\"}"))})
     })
     @GetMapping("/user-orders")
     public Page<OrderShortResponse> getUserOrders(Principal principal,
@@ -56,8 +55,8 @@ public class OrderController {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = OrderStatusResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))}),
+                    @Content(mediaType = "application/json", examples =
+                    @ExampleObject(value = "{\"error\":\"UNAUTHORIZED\"}"))})
     })
     @GetMapping("/status/{id}")
     public ResponseEntity<?> getOrderStatus(Principal principal,
@@ -72,8 +71,8 @@ public class OrderController {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = OrderResponse.class))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))})
+                    @Content(mediaType = "application/json", examples =
+                    @ExampleObject(value = "{\"error\":\"UNAUTHORIZED\"}"))})
     })
     @PostMapping(value = "/create")
     public ResponseEntity<?> createOrderFromShoppingCart(Principal principal,
