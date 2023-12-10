@@ -2,8 +2,8 @@ package com.restaurant_rest.service;
 
 import com.restaurant_rest.entity.Product;
 import com.restaurant_rest.mapper.ProductMapper;
-import com.restaurant_rest.model.product.ProductResponse;
 import com.restaurant_rest.model.product.ProductCriteria;
+import com.restaurant_rest.model.product.ProductResponse;
 import com.restaurant_rest.model.product.ProductShortResponse;
 import com.restaurant_rest.repositoty.ProductRepo;
 import com.restaurant_rest.repositoty.specification.ProductSpecification;
@@ -55,7 +55,8 @@ public class ProductService {
     public ProductResponse getProductById(long productId) {
         log.info(String.format("getProductById() -> start, with id: %s", productId));
         Optional<Product> byId = productRepo.findById(productId);
-        Product product = byId.orElseThrow(EntityNotFoundException::new);
+        Product product = byId.orElseThrow(() -> new EntityNotFoundException(
+                String.format("Продукт з id: %s не знайдено", productId)));
         ProductResponse productResponse = ProductMapper.MAPPER.productToProductResponse(product);
         log.info("getProductById() -> exit, return ProductResponse with id: " + productId);
         return productResponse;
