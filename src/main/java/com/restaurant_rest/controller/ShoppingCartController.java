@@ -2,8 +2,6 @@ package com.restaurant_rest.controller;
 
 import com.restaurant_rest.ShoppingCartItemRequestValidator;
 import com.restaurant_rest.exception.ForbiddenUpdateException;
-import com.restaurant_rest.model.order.OrderResponse;
-import com.restaurant_rest.model.order.OrderShortResponse;
 import com.restaurant_rest.model.shopping_cart.ShoppingCartItemRequest;
 import com.restaurant_rest.model.shopping_cart.ShoppingCartItemResponse;
 import com.restaurant_rest.service.ShoppingCartService;
@@ -57,7 +55,7 @@ public class ShoppingCartController {
 
     @DeleteMapping("/delete-item/{id}")
     public ResponseEntity<?> deleteShoppingCartItem(Principal principal,
-                                                 @Parameter(example = "1") @Min(value = 1) @PathVariable Long id) {
+                                                    @Parameter(example = "1") @Min(value = 1) @PathVariable Long id) {
         try {
             boolean isDelete = cartService.deleteShoppingCartItem(principal.getName(), id);
             if (isDelete) {
@@ -89,18 +87,6 @@ public class ShoppingCartController {
         try {
             ShoppingCartItemResponse itemResponse = cartService.changeCompositionItemCart(principal.getName(), id, itemRequest);
             return new ResponseEntity<>(itemResponse, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>("Сталась помилка під час оновлення", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping(value = "/create-order")
-    public ResponseEntity<?> createOrderFromShoppingCart(Principal principal) {
-        try {
-            OrderResponse orderFromShoppingCart = cartService.createOrderFromShoppingCart(principal.getName());
-            return new ResponseEntity<>(orderFromShoppingCart, HttpStatus.OK);
-        } catch (IllegalStateException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
             return new ResponseEntity<>("Сталась помилка під час оновлення", HttpStatus.BAD_REQUEST);
         }

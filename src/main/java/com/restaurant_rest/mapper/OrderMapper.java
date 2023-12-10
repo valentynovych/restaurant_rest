@@ -1,9 +1,8 @@
 package com.restaurant_rest.mapper;
 
-import com.restaurant_rest.entity.Order;
-import com.restaurant_rest.entity.OrderItem;
-import com.restaurant_rest.entity.Product;
-import com.restaurant_rest.entity.User;
+import com.restaurant_rest.entity.*;
+import com.restaurant_rest.model.address.AddressRequest;
+import com.restaurant_rest.model.order.OrderDetails;
 import com.restaurant_rest.model.order.OrderItemResponse;
 import com.restaurant_rest.model.order.OrderResponse;
 import com.restaurant_rest.model.order.OrderShortResponse;
@@ -39,4 +38,9 @@ public interface OrderMapper {
         return Mappers.getMapper(ProductMapper.class).productShortToProduct(productShort);
     }
 
+    Order orderDetailsToOrder(OrderDetails orderDetails);
+
+    default Address addressRequestToAddress(AddressRequest addressRequest) {
+        return Mappers.getMapper(AddressMapper.class).addressRequestToAddress(addressRequest);
+    }
 }

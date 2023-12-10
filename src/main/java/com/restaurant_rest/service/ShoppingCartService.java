@@ -127,34 +127,7 @@ public class ShoppingCartService {
         }
     }
 
-    public OrderResponse createOrderFromShoppingCart(String username) {
-        log.info("createOrderFromShoppingCart() -> start, with username: " + username);
-        User userByEmail = userService.getUserByEmail(username);
-        List<ShoppingCartItem> shoppingCart = userByEmail.getShoppingCart();
-        if (shoppingCart.isEmpty()) {
-            log.error("createOrderFromShoppingCart() -> get shopping cart is empty, throw IllegalStateException");
-            throw new IllegalStateException(String.format(
-                    "Корзина користувача %s пуста, неможливо сформувати замовлення", username));
-        }
-        log.info("createOrderFromShoppingCart() -> get shopping cart, his size: " + shoppingCart.size());
-        List<OrderItem> orderItems = ShoppingCartMapper.MAPPER.cartItemListToOrderItemList(shoppingCart);
 
-        Order order = new Order();
-        order.setUser(userByEmail);
-        orderItems.forEach(orderItem -> orderItem.setOrder(order));
-        order.setDatetimeOfCreate(Instant.now());
-        order.setTotalAmount(calculateTotalAmountShoppingCart(shoppingCart));
-        order.setUsedPromotion(new HashSet<>(userByEmail.getUserPromotion()));
-        order.setAccruedBonuses(order.getTotalAmount().intValue());
-        order.setStatus(OrderStatus.NEW);
-        order.setDeliveryTime(75);
-        order.setUsedBonuses(userByEmail.getBonuses());
-
-        Order save = orderRepo.save(order);
-        OrderResponse orderResponse = OrderMapper.MAPPER.orderToOrderResponse(save);
-        log.info("createOrderFromShoppingCart() -> exit, return saved order with id : " + orderResponse.getId());
-        return orderResponse;
-    }
 
     private List<ShoppingCartItem> applyPromotionToShoppingCart(List<ShoppingCartItem> shoppingCart,
                                                                 List<Promotion> promotions) {

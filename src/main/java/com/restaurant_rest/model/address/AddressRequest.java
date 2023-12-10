@@ -1,12 +1,18 @@
 package com.restaurant_rest.model.address;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class AddressRequest {
+    @Schema(example = "1")
+    @NotNull(message = "Обов'язкове поле")
+    @Max(value = Long.MAX_VALUE, message = "Значення поля не більше {value} символів")
+    private Long id;
     @Schema(example = "Мій дім")
     @NotEmpty(message = "Обов'язкове поле")
     @Size(max = 100, message = "Довжина поля не більше {max} символів")

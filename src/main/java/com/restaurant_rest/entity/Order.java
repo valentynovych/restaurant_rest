@@ -2,6 +2,7 @@ package com.restaurant_rest.entity;
 
 
 import com.restaurant_rest.entity.enums.OrderStatus;
+import com.restaurant_rest.entity.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,8 @@ public class Order {
     private Set<Promotion> usedPromotion;
     private Integer usedBonuses;
     private Integer accruedBonuses;
-    private String payment;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod payment;
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private Address address;
     private Integer deliveryTime;
