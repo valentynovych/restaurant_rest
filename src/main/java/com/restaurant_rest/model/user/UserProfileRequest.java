@@ -31,5 +31,5 @@ public class UserProfileRequest {
     @NotEmpty(message = "Field is required")
     @Pattern(regexp = "([0-9]+[A-Z]+[!/.,?@]+[A-Za-z0-9]*){8,200}", message = "Minimum 8 symbol")
     @Schema(example = "A1!qwerty3")
-    private String password;
+    private String passwordToChange;
 }

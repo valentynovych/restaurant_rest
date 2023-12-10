@@ -22,4 +22,8 @@ public interface ProductMapper {
     ProductShort productToProductShort(Product product);
 
     Product productShortToProduct(ProductShort productShort);
+
+    List<Product> productShortListToProductList(List<ProductShort> productWishlist);
+
+    List<ProductShort> productListToProductShortList(List<Product> productWishlist);
 }

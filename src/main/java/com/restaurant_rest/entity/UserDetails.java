@@ -27,5 +27,7 @@ public class UserDetails {
     @Column(updatable = false, nullable = false)
     private Date registrationDate;
     private String facebookUsername;
+    private String fullName;
+    private String passwordToChange;
 
 }

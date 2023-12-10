@@ -9,20 +9,19 @@ import java.util.Date;
 public class UserProfileResponse {
     @Schema(example = "1")
     private Long userId;
-    @Schema(example = "")
+    @Schema(example = "Прізвище І'мя")
     private String fullName;
-    @Schema(example = "")
+    @Schema(example = "380686868688")
     private String phone;
-    @Schema()
     private Date dateOfBirth;
-    @Schema
+    @Schema(example = "username")
     private String facebookUsername;
-    @Schema
+    @Schema(example = "user@gmail.com")
     private String email;
     @Schema(example = "20")
     private Integer amountOfOrders;
     @Schema(example = "250")
     private Integer activeBonuses;
-    @Schema
+    @Schema(example = "A1s#2sdvH")
     private String password;
 }
