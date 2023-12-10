@@ -2,7 +2,6 @@ package com.restaurant_rest.controller;
 
 import com.restaurant_rest.model.CustomError;
 import com.restaurant_rest.model.SimpleError;
-import com.restaurant_rest.model.order.OrderResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,10 +13,12 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.List;
 
@@ -47,6 +48,11 @@ public class TokenControllerAdvice {
         return new ResponseEntity<>(new SimpleError(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Endpoint for handle MethodArgumentNotValidException
+     * when body object field not valid
+     * @return List<CustomError>
+     */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400", description = "Bad request", content = {
                     @Content(mediaType = "application/json", array = @ArraySchema(schema =
@@ -54,7 +60,8 @@ public class TokenControllerAdvice {
     })
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex, BindingResult result) {
+    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
+        BindingResult result = ex.getBindingResult();
         List<CustomError> customErrors = result.getFieldErrors()
                 .stream()
                 .map(fieldError -> new CustomError(
@@ -62,6 +69,31 @@ public class TokenControllerAdvice {
                         fieldError.getField(),
                         fieldError.getDefaultMessage(),
                         fieldError.getRejectedValue()))
+                .toList();
+        return new ResponseEntity<>(customErrors, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Endpoint for handle HandlerMethodValidationException
+     * when headers parameters not valid
+     * @return List<CustomError>
+     */
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Bad request", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema =
+                    @Schema(implementation = CustomError.class)))})
+    })
+    @ExceptionHandler(value = HandlerMethodValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleHeadersValidationException(HandlerMethodValidationException ex) {
+        List<ParameterValidationResult> allValidationResults = ex.getAllValidationResults();
+        List<CustomError> customErrors = allValidationResults
+                .stream()
+                .map(fieldError -> new CustomError(
+                        "Header parameter",
+                        fieldError.getMethodParameter().getParameterName(),
+                        fieldError.getResolvableErrors().get(0).getDefaultMessage(),
+                        fieldError.getArgument()))
                 .toList();
         return new ResponseEntity<>(customErrors, HttpStatus.BAD_REQUEST);
     }
