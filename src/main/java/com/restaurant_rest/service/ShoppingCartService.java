@@ -1,24 +1,21 @@
 package com.restaurant_rest.service;
 
-import com.restaurant_rest.entity.*;
-import com.restaurant_rest.entity.enums.OrderStatus;
+import com.restaurant_rest.entity.Product;
+import com.restaurant_rest.entity.Promotion;
+import com.restaurant_rest.entity.ShoppingCartItem;
+import com.restaurant_rest.entity.User;
 import com.restaurant_rest.entity.enums.PromotionType;
-import com.restaurant_rest.exception.ForbiddenUpdateException;
-import com.restaurant_rest.mapper.OrderMapper;
 import com.restaurant_rest.mapper.ShoppingCartMapper;
-import com.restaurant_rest.model.order.OrderResponse;
 import com.restaurant_rest.model.product.ProductResponse;
 import com.restaurant_rest.model.shopping_cart.ShoppingCartItemRequest;
 import com.restaurant_rest.model.shopping_cart.ShoppingCartItemResponse;
-import com.restaurant_rest.repositoty.OrderRepo;
 import com.restaurant_rest.repositoty.ShoppingCartItemRepo;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -29,7 +26,6 @@ public class ShoppingCartService {
     private final UserService userService;
     private final ProductService productService;
     private final ShoppingCartItemRepo shoppingCartItemRepo;
-    private final OrderRepo orderRepo;
 
     public List<ShoppingCartItemResponse> getUserCartItems(String username) {
         log.info("getUserCartItems() -> start, with username: " + username);
@@ -61,15 +57,12 @@ public class ShoppingCartService {
         log.info("deleteShoppingCartItem() -> start, with username: " + username +
                 " cart id: " + id);
         User userByEmail = userService.getUserByEmail(username);
-        List<ShoppingCartItem> shoppingCart = userByEmail.getShoppingCart()
-                .stream()
-                .filter(shoppingCartItem -> shoppingCartItem.getId().equals(id))
-                .toList();
-        if (shoppingCart.isEmpty()) {
+        Optional<ShoppingCartItem> byUserAndId = shoppingCartItemRepo.findByUserAndId(userByEmail, id);
+        if (byUserAndId.isEmpty()) {
             log.error(String.format("deleteShoppingCartItem() -> " +
                     "ShoppingCartItem by id: %s not owned user: %s", id, username));
-            throw new ForbiddenUpdateException(
-                    String.format("Елемент корзини з id: %s не належить користувачу - %s", id, username));
+            throw new EntityNotFoundException(
+                    String.format("Корзина користувача %s пуста", username));
         }
         shoppingCartItemRepo.deleteById(id);
         if (!shoppingCartItemRepo.existsById(id)) {
@@ -83,10 +76,10 @@ public class ShoppingCartService {
     public void clearShoppingCart(String username) {
         log.info("clearShoppingCart() -> start, with username: " + username);
         User userByEmail = userService.getUserByEmail(username);
-        List<ShoppingCartItem> shoppingCart = userByEmail.getShoppingCart();
+        List<ShoppingCartItem> shoppingCart = shoppingCartItemRepo.findAllByUser(userByEmail);
         if (shoppingCart.isEmpty()) {
-            throw new EmptyResultDataAccessException(String.format(
-                    "Корзина користувача %s була пуста", username), 1);
+            throw new EntityNotFoundException(String.format(
+                    "Корзина користувача %s була пуста", username));
         }
         shoppingCartItemRepo.deleteAll(shoppingCart);
         log.info("clearShoppingCart() -> success clear shopping cart, with username: " + username);
@@ -97,17 +90,14 @@ public class ShoppingCartService {
                                                               ShoppingCartItemRequest itemRequest) {
         log.info(String.format("changeCompositionItemCart() -> start, with username: %s, cart item id: %s", username, id));
         User userByEmail = userService.getUserByEmail(username);
-        List<ShoppingCartItem> shoppingCart = userByEmail.getShoppingCart()
-                .stream()
-                .filter(shoppingCartItem -> shoppingCartItem.getId().equals(id))
-                .toList();
+        Optional<ShoppingCartItem> shoppingCart = shoppingCartItemRepo.findByUserAndId(userByEmail, id);
 
         if (shoppingCart.isEmpty()) {
             log.error("changeCompositionItemCart() -> shopping cart is not exist cart item with id: " + id);
-            throw new ForbiddenUpdateException(
-                    String.format("Елемент корзини з id: %s не належить користувачу - %s", id, username));
+            throw new EntityNotFoundException(
+                    String.format("Елемент корзини з id: %s не знайдено", id));
         } else {
-            ShoppingCartItem shoppingCartItem = shoppingCart.stream().findFirst().get();
+            ShoppingCartItem shoppingCartItem = shoppingCart.get();
             shoppingCartItem.setAdditionalIngredients(
                     itemRequest.getAdditionalIngredients()
                             .stream()
@@ -126,7 +116,6 @@ public class ShoppingCartService {
             return itemResponse;
         }
     }
-
 
 
     private List<ShoppingCartItem> applyPromotionToShoppingCart(List<ShoppingCartItem> shoppingCart,
