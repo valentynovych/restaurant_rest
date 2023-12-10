@@ -2,7 +2,6 @@ package com.restaurant_rest.service;
 
 import com.restaurant_rest.entity.Address;
 import com.restaurant_rest.entity.User;
-import com.restaurant_rest.exception.ForbiddenUpdateException;
 import com.restaurant_rest.mapper.AddressMapper;
 import com.restaurant_rest.model.address.AddressRequest;
 import com.restaurant_rest.model.address.AddressResponse;
@@ -54,13 +53,14 @@ public class AddressService {
     public AddressResponse updateUserAddress(Long id, AddressRequest addressRequest) {
         log.info("updateUserAddress() -> start, with id: " + id);
         Optional<Address> byId = addressRepo.findById(id);
-        Address address = byId.orElseThrow(EntityNotFoundException::new);
+        Address address = byId.orElseThrow(() -> new EntityNotFoundException(
+                String.format("Адреси з id: %s не знайдено", id)));
 
         User user = address.getUser();
         List<Address> userAddresses = addressRepo.findAllByUser(user);
         if (!userAddresses.contains(address)) {
             log.error("updateUserAddress() -> current user not owner address, with id: " + id);
-            throw new ForbiddenUpdateException("Немає прав для редагування адреси з id: " + id);
+            throw new EntityNotFoundException(String.format("Адреси з id: %s не знайдено", id));
         }
 
         Address request = AddressMapper.MAPPER.addressRequestToAddress(addressRequest);
@@ -75,10 +75,11 @@ public class AddressService {
     public boolean deleteUserAddress(String username, Long id) {
         log.info("deleteUserAddress() -> start, with id: " + id);
         Optional<Address> byId = addressRepo.findById(id);
-        Address address = byId.orElseThrow(EntityNotFoundException::new);
+        Address address = byId.orElseThrow(() -> new EntityNotFoundException(
+                String.format("Адреси з id: %s не знайдено", id)));
         if (!address.getUser().getUsername().equals(username)) {
             log.error(String.format("deleteUserAddress() -> user: %s, not owner address with id: %s", username, id));
-            throw new ForbiddenUpdateException("Немає прав для видалення адреси з id: " + id);
+            throw new EntityNotFoundException("Немає прав для видалення адреси з id: " + id);
         }
         addressRepo.delete(address);
         if (!addressRepo.existsById(id)) {
