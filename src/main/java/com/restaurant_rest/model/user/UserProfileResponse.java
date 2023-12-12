@@ -23,5 +23,5 @@ public class UserProfileResponse {
     @Schema(example = "250")
     private Integer activeBonuses;
     @Schema(example = "A1s#2sdvH")
-    private String password;
+    private String passwordToChange;
 }

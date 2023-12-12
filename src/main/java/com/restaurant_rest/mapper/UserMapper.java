@@ -13,7 +13,7 @@ public interface UserMapper {
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "userId", source = "id")
-    @Mapping(target = "fullName", expression = "java(user.getUserDetails().getFirstName() + \" \" + user.getUserDetails().getLastName())")
+//    @Mapping(target = "fullName", expression = "java(user.getUserDetails().getFirstName() + \" \" + user.getUserDetails().getLastName())")
     @Mapping(target = "phone", source = "userDetails.phone")
     @Mapping(target = "dateOfBirth", source = "userDetails.dateOfBirth")
     @Mapping(target = "activeBonuses", source = "userDetails.activeBonuses")
