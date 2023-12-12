@@ -1,30 +1,37 @@
 package com.restaurant_rest.config;
 
 import com.restaurant_rest.utils.JwtTokenUtils;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
+@Log4j2
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtils jwtTokenUtils;
+    private final HandlerExceptionResolver exceptionResolver;
+
+    public JwtRequestFilter(JwtTokenUtils jwtTokenUtils,
+                            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
+        this.jwtTokenUtils = jwtTokenUtils;
+        this.exceptionResolver = exceptionResolver;
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
 
         String authHeader = request.getHeader("Authorization");
         String username = null;
@@ -34,13 +41,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authHeader.substring(7);
             try {
                 username = jwtTokenUtils.getUsername(jwt);
-            } catch (ExpiredJwtException e) {
-                logger.debug("Lifetime token is expired");
-                response.sendRedirect("/api/v1/auth/refreshToken");
-                throw new ExpiredJwtException(e.getHeader(), e.getClaims(), e.getMessage(), e.getCause());
-            } catch (SignatureException e) {
-                logger.debug("Error signature");
-                throw new SignatureException(e.getMessage(), e.getCause());
+            } catch (JwtException e) {
+                log.debug("Lifetime token is expired");
+                exceptionResolver.resolveException(request, response, null, e);
             }
         }
 
@@ -52,6 +55,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             );
             SecurityContextHolder.getContext().setAuthentication(token);
         }
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } catch (ServletException | IOException e) {
+            log.error("doFilterInternal() -> " + e.getMessage());
+            exceptionResolver.resolveException(request, response, null, e);
+        }
     }
 }

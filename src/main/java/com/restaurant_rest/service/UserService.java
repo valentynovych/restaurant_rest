@@ -1,14 +1,18 @@
 package com.restaurant_rest.service;
 
 import com.restaurant_rest.entity.Product;
+import com.restaurant_rest.entity.RefreshToken;
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.entity.UserDetails;
 import com.restaurant_rest.mapper.ProductMapper;
 import com.restaurant_rest.mapper.UserMapper;
+import com.restaurant_rest.model.authetnticate.JwtResponse;
 import com.restaurant_rest.model.user.ProductWishListWrap;
 import com.restaurant_rest.model.user.UserProfileRequest;
 import com.restaurant_rest.model.user.UserProfileResponse;
 import com.restaurant_rest.repositoty.UserRepo;
+import com.restaurant_rest.utils.JwtTokenUtils;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +28,9 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepo userRepo;
+    private final JwtTokenUtils tokenUtils;
+    private final RefreshTokenService refreshTokenService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     public User getUserByEmail(String email) {
         log.info("getUserByEmail() -> start with email: " + email);
@@ -59,12 +66,22 @@ public class UserService {
         log.info("saveUserConfirmCode() -> exit");
     }
 
-    public void successLogin(User userByEmail) {
+    public JwtResponse successLogin(User userByEmail) {
         log.info("successLogin() -> start with email: " + userByEmail.getUsername());
         userByEmail.setDateTimeOfLastLogin(Instant.now());
         log.info("saveUserConfirmCode() -> clear confirmEmail code");
         saveUserConfirmCode(userByEmail, null);
         log.info("saveUserConfirmCode() -> exit");
+        org.springframework.security.core.userdetails.UserDetails userDetails =
+                userDetailsService.loadUserByUsername(userByEmail.getEmail());
+        String accessToken = tokenUtils.createAccessToken(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
+
+        return JwtResponse
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .build();
     }
 
     public UserProfileResponse updateUserProfile(String username, UserProfileRequest profileRequest) {
@@ -102,5 +119,17 @@ public class UserService {
         log.info("updateUserProductWishList() -> user product wishlist already size: " + newWishlist.size());
         log.info("updateUserProductWishList() -> exit");
         return productWishList;
+    }
+
+    public void registerNewUser(String email1, String confirmCode) {
+        Optional<User> byEmail = userRepo.findByEmail(email1);
+        if (byEmail.isEmpty()) {
+            User newUser = new User();
+            newUser.setEmail(email1);
+            newUser.setConfirmEmail(confirmCode);
+            userRepo.save(newUser);
+        } else {
+            throw new EntityExistsException("Користувач уже зареєтрований у системі, скористайтесь входом у додаток");
+        }
     }
 }

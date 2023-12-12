@@ -3,6 +3,7 @@ package com.restaurant_rest.model.authetnticate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class EmailConfirm {
     private String email;
     @Schema(example = "1000")
     @NotEmpty(message = "Not empty")
+    @NotNull(message = "Not null")
     @Pattern(regexp = "\\d{4}")
     private String confirmCode;
 }

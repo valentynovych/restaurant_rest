@@ -1,8 +1,8 @@
 package com.restaurant_rest.controller;
 
+import com.restaurant_rest.exception.RefreshTokenException;
 import com.restaurant_rest.model.CustomError;
 import com.restaurant_rest.model.SimpleError;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,17 +24,27 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import java.util.List;
 
 @RestControllerAdvice
-public class TokenControllerAdvice {
+public class ExceptionHandlerControllerAdvice {
 
-//    @ExceptionHandler(value = RefreshTokenException.class)
-//    @ResponseStatus(HttpStatus.FORBIDDEN)
-//    public ResponseEntity<?> handleTokenRefreshException(RefreshTokenException ex, WebRequest request) {
-//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
-//    }
+    @ExceptionHandler({RefreshTokenException.class})
+    public ResponseEntity<?> handleTokenRefreshException(RefreshTokenException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
 
-    @ExceptionHandler(value = JwtException.class)
+    @ExceptionHandler({AuthenticationException.class})
+    public void handleTokenAccessException(Exception ex) {
+        System.out.println(ex.getMessage());
+//        return new ResponseEntity<>(new SimpleError(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
+                    @Content(mediaType = "application/json", schema =
+                    @Schema(implementation = SimpleError.class))})
+    })
+    @ExceptionHandler(value = {JwtException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<?> handleTokenAccessException(ExpiredJwtException ex) {
+    public ResponseEntity<?> handleTokenAccessException(JwtException ex) {
         return new ResponseEntity<>(new SimpleError(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
@@ -44,7 +55,7 @@ public class TokenControllerAdvice {
     })
     @ExceptionHandler(value = EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<?> handleTokenRefreshException(EntityNotFoundException ex) {
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex) {
         return new ResponseEntity<>(new SimpleError(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
