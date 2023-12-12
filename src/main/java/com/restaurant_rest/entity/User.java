@@ -36,12 +36,8 @@ public class User implements org.springframework.security.core.userdetails.UserD
     @OneToMany(mappedBy = "user",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Address> addresses;
-//    @JoinTable(name = "shopping_cart",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "order_item_id"))
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ShoppingCartItem> shoppingCart;
-
     @OneToMany
     @JoinTable(name = "user_promotion",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -49,6 +45,7 @@ public class User implements org.springframework.security.core.userdetails.UserD
     private List<Promotion> userPromotion;
     @OneToMany(mappedBy = "user")
     private List<Order> userOrders;
+    @Column(length = 5)
     private String confirmEmail;
 
     @Override

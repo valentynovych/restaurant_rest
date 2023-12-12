@@ -5,16 +5,13 @@ import com.restaurant_rest.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 @Data
 @Entity
 @Table(name = "staff")
-public class Staff
-//        implements UserDetails
-{
+public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,33 +35,4 @@ public class Staff
     @OneToMany(mappedBy = "orderPlaced", fetch = FetchType.LAZY)
     private List<Order> placedOrders;
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority(staffRole.name()));
-//    }
-//
-//    @Override
-//    public String getUsername() {
-//        return email;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isEnabled() {
-//        return status;
-//    }
 }

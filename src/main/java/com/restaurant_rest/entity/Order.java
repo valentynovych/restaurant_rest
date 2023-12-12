@@ -38,8 +38,11 @@ public class Order {
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
     private Address address;
     private Integer deliveryTime;
+    @Column(length = 50)
     private String reservedTime;
+    @Column(length = 200)
     private String comment;
+    @Column(length = 10)
     private String cutlery;
     @ManyToOne(fetch = FetchType.LAZY)
     private Staff orderPlaced;

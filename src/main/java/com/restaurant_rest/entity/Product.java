@@ -18,14 +18,19 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 200)
     private String name;
     private Boolean isActive;
+    @Column(nullable = false)
     private Boolean isIngredient;
     private BigDecimal price;
     private Integer weight;
+    @Column(length = 200)
     private String photo;
     private Boolean isNovelty;
+    @Column(length = 1000)
     private String characteristics;
+    @Column(length = 1000)
     private String description;
     private Boolean promotionIsActive;
     @ManyToOne

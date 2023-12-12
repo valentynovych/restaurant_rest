@@ -12,6 +12,7 @@ public class Subcategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 100)
     private String subcategoryName;
     @ManyToOne
     private MainCategory parentCategory;

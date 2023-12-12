@@ -34,6 +34,7 @@ public class OrderItem {
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> additionalIngredients;
     private Boolean isGiftProduct;
+    @Column(length = 100)
     private String promotionName;
     @Enumerated(EnumType.STRING)
     private PromotionCondition promotionCondition;
@@ -41,5 +42,6 @@ public class OrderItem {
     private PromotionType promotionType;
     private Integer discountAmount;
     private Integer minimalAmount;
+    @Column(length = 5)
     private String promoCode;
 }

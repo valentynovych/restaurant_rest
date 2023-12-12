@@ -22,6 +22,7 @@ public class ShoppingCartItem {
     private User user;
     @ManyToOne
     private Product product;
+    @Column(nullable = false)
     private BigDecimal itemPrice;
     private BigDecimal itemSalePrice;
     @ManyToMany(cascade = CascadeType.ALL)

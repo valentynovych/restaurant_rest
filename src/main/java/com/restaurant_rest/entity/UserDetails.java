@@ -26,8 +26,11 @@ public class UserDetails {
     private Integer usedBonuses;
     @Column(updatable = false, nullable = false)
     private Date registrationDate;
+    @Column(length = 200)
     private String facebookUsername;
+    @Column(length = 200)
     private String fullName;
+    @Column(length = 200)
     private String passwordToChange;
 
 }

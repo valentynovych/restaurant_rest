@@ -19,6 +19,7 @@ public class Promotion {
     private Boolean isActive;
     @Column(unique = true, nullable = false, length = 100)
     private String name;
+    @Column(length = 200)
     private String photo;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -34,11 +35,13 @@ public class Promotion {
     private Product forProduct;
     @ManyToOne
     private Product giftProduct;
+    @Column()
     private Integer discountAmount;
     private Integer minimalAmount;
     @Column(unique = true, length = 30)
     private String promoCode;
     private Boolean activateOnCode;
+    @Column(length = 1000)
     private String description;
     @Column(nullable = false, updatable = false)
     private Instant dateOfCreate;
