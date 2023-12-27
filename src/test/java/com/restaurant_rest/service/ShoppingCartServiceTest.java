@@ -481,176 +481,176 @@ class ShoppingCartServiceTest {
         }
     }
 
-        @Test
-        void addItemToShoppingCart_ifUserHavePromotionCondition_IfHaveGiftProducts() {
+    @Test
+    void addItemToShoppingCart_ifUserHavePromotionCondition_IfHaveGiftProducts() {
 
-            Promotion promotion = new Promotion();
-            promotion.setPromotionCondition(PromotionCondition.THIRD_PRODUCT_ON_GIFT);
-            promotion.setPromotionType(PromotionType.FOR_CATEGORY);
-            promotion.setIsActive(Boolean.TRUE);
-            user.setUserPromotion(List.of(promotion));
-            user.setTotalOrders(0);
+        Promotion promotion = new Promotion();
+        promotion.setPromotionCondition(PromotionCondition.THIRD_PRODUCT_ON_GIFT);
+        promotion.setPromotionType(PromotionType.FOR_CATEGORY);
+        promotion.setIsActive(Boolean.TRUE);
+        user.setUserPromotion(List.of(promotion));
+        user.setTotalOrders(0);
 
-            MainCategory mainCategory = new MainCategory();
-            mainCategory.setId(1L);
-            Subcategory subcategory = new Subcategory();
-            subcategory.setId(1L);
-            mainCategory.setSubcategories(List.of(subcategory));
+        MainCategory mainCategory = new MainCategory();
+        mainCategory.setId(1L);
+        Subcategory subcategory = new Subcategory();
+        subcategory.setId(1L);
+        mainCategory.setSubcategories(List.of(subcategory));
 
-            Product product = new Product();
-            product.setId(productShort.getId());
-            product.setName(productShort.getName());
-            product.setPrice(BigDecimal.valueOf(120));
-            product.setSubcategory(subcategory);
-            product.setMainCategory(mainCategory);
+        Product product = new Product();
+        product.setId(productShort.getId());
+        product.setName(productShort.getName());
+        product.setPrice(BigDecimal.valueOf(120));
+        product.setSubcategory(subcategory);
+        product.setMainCategory(mainCategory);
 
-            promotion.setForProduct(product);
-            promotion.setDiscountAmount(15);
-            promotion.setGiftProduct(product);
-            promotion.setForCategory(mainCategory);
-            promotion.setSubcategory(subcategory);
+        promotion.setForProduct(product);
+        promotion.setDiscountAmount(15);
+        promotion.setGiftProduct(product);
+        promotion.setForCategory(mainCategory);
+        promotion.setSubcategory(subcategory);
 
-            ShoppingCartItem toCartItem = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
-            toCartItem.setProduct(product);
-            toCartItem.setItemPrice(BigDecimal.valueOf(200));
-            toCartItem.setUser(user);
+        ShoppingCartItem toCartItem = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
+        toCartItem.setProduct(product);
+        toCartItem.setItemPrice(BigDecimal.valueOf(200));
+        toCartItem.setUser(user);
 
-            ShoppingCartItem toCartItem1 = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
-            toCartItem1.setProduct(product);
-            toCartItem1.setItemPrice(BigDecimal.valueOf(200));
-            toCartItem1.setUser(user);
-            toCartItem1.setGiftProduct(true);
+        ShoppingCartItem toCartItem1 = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
+        toCartItem1.setProduct(product);
+        toCartItem1.setItemPrice(BigDecimal.valueOf(200));
+        toCartItem1.setUser(user);
+        toCartItem1.setGiftProduct(true);
 
-            shoppingCartItems = new ArrayList<>();
-            shoppingCartItems.add(toCartItem);
-            shoppingCartItems.add(toCartItem1);
-            user.setShoppingCart(shoppingCartItems);
+        shoppingCartItems = new ArrayList<>();
+        shoppingCartItems.add(toCartItem);
+        shoppingCartItems.add(toCartItem1);
+        user.setShoppingCart(shoppingCartItems);
 
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            when(productService.getProductById(productShort.getId())).thenReturn(productResponse);
-            when(productService.getProductById(additionalProduct.getId())).thenReturn(addProduct);
-            when(cartItemRepo.findAllByUser(user)).thenReturn(shoppingCartItems);
-            when(cartItemRepo.save(any(ShoppingCartItem.class))).thenReturn(toCartItem);
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(productService.getProductById(productShort.getId())).thenReturn(productResponse);
+        when(productService.getProductById(additionalProduct.getId())).thenReturn(addProduct);
+        when(cartItemRepo.findAllByUser(user)).thenReturn(shoppingCartItems);
+        when(cartItemRepo.save(any(ShoppingCartItem.class))).thenReturn(toCartItem);
 
-            List<ShoppingCartItemResponse> cartItemResponses =
-                    cartService.addItemToShoppingCart(user.getUsername(), itemRequest);
-            assertFalse(cartItemResponses.isEmpty());
-        }
-
-        @Test
-        void addItemToShoppingCart_ifUserHavePromotionCondition_IfHaveGiftProduct() {
-
-            Promotion promotion = new Promotion();
-            promotion.setPromotionCondition(PromotionCondition.THIRD_PRODUCT_ON_GIFT);
-            promotion.setPromotionType(PromotionType.FOR_CATEGORY);
-            promotion.setIsActive(Boolean.TRUE);
-            user.setUserPromotion(List.of(promotion));
-            user.setTotalOrders(0);
-
-            Product product = new Product();
-            product.setId(productShort.getId());
-            product.setName(productShort.getName());
-            product.setPrice(BigDecimal.valueOf(120));
-
-            promotion.setForProduct(product);
-            promotion.setDiscountAmount(15);
-            promotion.setGiftProduct(product);
-
-            ShoppingCartItem toCartItem = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
-            toCartItem.setProduct(product);
-            toCartItem.setItemPrice(BigDecimal.valueOf(200));
-            toCartItem.setUser(user);
-            toCartItem.setGiftProduct(true);
-
-            shoppingCartItems = new ArrayList<>();
-            shoppingCartItems.add(toCartItem);
-            user.setShoppingCart(shoppingCartItems);
-
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            when(productService.getProductById(productShort.getId())).thenReturn(productResponse);
-            when(productService.getProductById(additionalProduct.getId())).thenReturn(addProduct);
-            when(cartItemRepo.findAllByUser(user)).thenReturn(shoppingCartItems);
-            when(cartItemRepo.save(any(ShoppingCartItem.class))).thenReturn(toCartItem);
-
-            List<ShoppingCartItemResponse> cartItemResponses =
-                    cartService.addItemToShoppingCart(user.getUsername(), itemRequest);
-            assertFalse(cartItemResponses.isEmpty());
-        }
-
-        @Test
-        void deleteShoppingCartItem_ifItemIsPresent_SuccessDeleted () {
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            ShoppingCartItem value = shoppingCartItems.get(0);
-            Long id = value.getId();
-            when(cartItemRepo.findByUserAndId(user, id)).thenReturn(Optional.of(value));
-            when(cartItemRepo.existsById(id)).thenReturn(false);
-            cartService.deleteShoppingCartItem(user.getUsername(), id);
-            verify(cartItemRepo).deleteById(id);
-        }
-
-        @Test
-        void deleteShoppingCartItem_ifItemIsPresent_ErrorDeleted () {
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            ShoppingCartItem value = shoppingCartItems.get(0);
-            Long id = value.getId();
-            when(cartItemRepo.findByUserAndId(user, id)).thenReturn(Optional.of(value));
-            when(cartItemRepo.existsById(id)).thenReturn(true);
-            cartService.deleteShoppingCartItem(user.getUsername(), id);
-            verify(cartItemRepo).deleteById(id);
-        }
-
-        @Test
-        void deleteShoppingCartItem_ifItemIsEmpty () {
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            ShoppingCartItem value = shoppingCartItems.get(0);
-            Long id = value.getId();
-            when(cartItemRepo.findByUserAndId(user, id)).thenReturn(Optional.empty());
-            assertThrows(EntityNotFoundException.class, () ->
-                    cartService.deleteShoppingCartItem(user.getUsername(), id));
-
-        }
-
-        @Test
-        void clearShoppingCart_ifShoppingCartIsNotEmpty () {
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            when(cartItemRepo.findAllByUser(user)).thenReturn(shoppingCartItems);
-            cartService.clearShoppingCart(user.getUsername());
-            verify(cartItemRepo).deleteAll(shoppingCartItems);
-        }
-
-        @Test
-        void clearShoppingCart_ifShoppingCartIsEmpty () {
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            when(cartItemRepo.findAllByUser(user)).thenReturn(new ArrayList<>());
-            assertThrows(EntityNotFoundException.class, () ->
-                    cartService.clearShoppingCart(user.getUsername()));
-        }
-
-        @Test
-        void changeCompositionItemCart_ifCartItemNotFound () {
-            user.setShoppingCart(new ArrayList<>());
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            when(cartItemRepo.findByUserAndId(user, 1L)).thenReturn(Optional.empty());
-            assertThrows(EntityNotFoundException.class, () ->
-                    cartService.changeCompositionItemCart(user.getUsername(), 1L, itemRequest));
-        }
-
-        @Test
-        void changeCompositionItemCart () {
-            user.setShoppingCart(new ArrayList<>());
-            ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
-            shoppingCartItem.setId(1L);
-            shoppingCartItem.setAdditionalIngredients(new ArrayList<>());
-            shoppingCartItem.setExclusionIngredients(new ArrayList<>());
-            itemRequest.setExclusionIngredients(new ArrayList<>());
-            when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
-            when(cartItemRepo.findByUserAndId(user, 1L)).thenReturn(Optional.of(shoppingCartItem));
-            when(cartItemRepo.save(any(ShoppingCartItem.class))).thenReturn(shoppingCartItem);
-
-            ShoppingCartItemResponse shoppingCartItemResponse =
-                    cartService.changeCompositionItemCart(user.getUsername(), 1L, itemRequest);
-            assertNotNull(shoppingCartItemResponse);
-            assertFalse(shoppingCartItemResponse.getAdditionalIngredients().isEmpty());
-            assertTrue(shoppingCartItemResponse.getExclusionIngredients().isEmpty());
-        }
+        List<ShoppingCartItemResponse> cartItemResponses =
+                cartService.addItemToShoppingCart(user.getUsername(), itemRequest);
+        assertFalse(cartItemResponses.isEmpty());
     }
+
+    @Test
+    void addItemToShoppingCart_ifUserHavePromotionCondition_IfHaveGiftProduct() {
+
+        Promotion promotion = new Promotion();
+        promotion.setPromotionCondition(PromotionCondition.THIRD_PRODUCT_ON_GIFT);
+        promotion.setPromotionType(PromotionType.FOR_CATEGORY);
+        promotion.setIsActive(Boolean.TRUE);
+        user.setUserPromotion(List.of(promotion));
+        user.setTotalOrders(0);
+
+        Product product = new Product();
+        product.setId(productShort.getId());
+        product.setName(productShort.getName());
+        product.setPrice(BigDecimal.valueOf(120));
+
+        promotion.setForProduct(product);
+        promotion.setDiscountAmount(15);
+        promotion.setGiftProduct(product);
+
+        ShoppingCartItem toCartItem = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
+        toCartItem.setProduct(product);
+        toCartItem.setItemPrice(BigDecimal.valueOf(200));
+        toCartItem.setUser(user);
+        toCartItem.setGiftProduct(true);
+
+        shoppingCartItems = new ArrayList<>();
+        shoppingCartItems.add(toCartItem);
+        user.setShoppingCart(shoppingCartItems);
+
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(productService.getProductById(productShort.getId())).thenReturn(productResponse);
+        when(productService.getProductById(additionalProduct.getId())).thenReturn(addProduct);
+        when(cartItemRepo.findAllByUser(user)).thenReturn(shoppingCartItems);
+        when(cartItemRepo.save(any(ShoppingCartItem.class))).thenReturn(toCartItem);
+
+        List<ShoppingCartItemResponse> cartItemResponses =
+                cartService.addItemToShoppingCart(user.getUsername(), itemRequest);
+        assertFalse(cartItemResponses.isEmpty());
+    }
+
+    @Test
+    void deleteShoppingCartItem_ifItemIsPresent_SuccessDeleted() {
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        ShoppingCartItem value = shoppingCartItems.get(0);
+        Long id = value.getId();
+        when(cartItemRepo.findByUserAndId(user, id)).thenReturn(Optional.of(value));
+        when(cartItemRepo.existsById(id)).thenReturn(false);
+        cartService.deleteShoppingCartItem(user.getUsername(), id);
+        verify(cartItemRepo).deleteById(id);
+    }
+
+    @Test
+    void deleteShoppingCartItem_ifItemIsPresent_ErrorDeleted() {
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        ShoppingCartItem value = shoppingCartItems.get(0);
+        Long id = value.getId();
+        when(cartItemRepo.findByUserAndId(user, id)).thenReturn(Optional.of(value));
+        when(cartItemRepo.existsById(id)).thenReturn(true);
+        cartService.deleteShoppingCartItem(user.getUsername(), id);
+        verify(cartItemRepo).deleteById(id);
+    }
+
+    @Test
+    void deleteShoppingCartItem_ifItemIsEmpty() {
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        ShoppingCartItem value = shoppingCartItems.get(0);
+        Long id = value.getId();
+        when(cartItemRepo.findByUserAndId(user, id)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                cartService.deleteShoppingCartItem(user.getUsername(), id));
+
+    }
+
+    @Test
+    void clearShoppingCart_ifShoppingCartIsNotEmpty() {
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(cartItemRepo.findAllByUser(user)).thenReturn(shoppingCartItems);
+        cartService.clearShoppingCart(user.getUsername());
+        verify(cartItemRepo).deleteAll(shoppingCartItems);
+    }
+
+    @Test
+    void clearShoppingCart_ifShoppingCartIsEmpty() {
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(cartItemRepo.findAllByUser(user)).thenReturn(new ArrayList<>());
+        assertThrows(EntityNotFoundException.class, () ->
+                cartService.clearShoppingCart(user.getUsername()));
+    }
+
+    @Test
+    void changeCompositionItemCart_ifCartItemNotFound() {
+        user.setShoppingCart(new ArrayList<>());
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(cartItemRepo.findByUserAndId(user, 1L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () ->
+                cartService.changeCompositionItemCart(user.getUsername(), 1L, itemRequest));
+    }
+
+    @Test
+    void changeCompositionItemCart() {
+        user.setShoppingCart(new ArrayList<>());
+        ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
+        shoppingCartItem.setId(1L);
+        shoppingCartItem.setAdditionalIngredients(new ArrayList<>());
+        shoppingCartItem.setExclusionIngredients(new ArrayList<>());
+        itemRequest.setExclusionIngredients(new ArrayList<>());
+        when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(cartItemRepo.findByUserAndId(user, 1L)).thenReturn(Optional.of(shoppingCartItem));
+        when(cartItemRepo.save(any(ShoppingCartItem.class))).thenReturn(shoppingCartItem);
+
+        ShoppingCartItemResponse shoppingCartItemResponse =
+                cartService.changeCompositionItemCart(user.getUsername(), 1L, itemRequest);
+        assertNotNull(shoppingCartItemResponse);
+        assertFalse(shoppingCartItemResponse.getAdditionalIngredients().isEmpty());
+        assertTrue(shoppingCartItemResponse.getExclusionIngredients().isEmpty());
+    }
+}

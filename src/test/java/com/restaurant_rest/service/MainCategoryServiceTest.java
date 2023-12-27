@@ -3,7 +3,6 @@ package com.restaurant_rest.service;
 import com.restaurant_rest.entity.MainCategory;
 import com.restaurant_rest.model.category.MainCategoryShortResponse;
 import com.restaurant_rest.repositoty.MainCategoryRepo;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 

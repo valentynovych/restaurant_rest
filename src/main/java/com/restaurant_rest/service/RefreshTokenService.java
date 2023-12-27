@@ -6,7 +6,6 @@ import com.restaurant_rest.exception.RefreshTokenException;
 import com.restaurant_rest.repositoty.RefreshTokenRepo;
 import com.restaurant_rest.repositoty.UserRepo;
 import com.restaurant_rest.utils.JwtTokenUtils;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
