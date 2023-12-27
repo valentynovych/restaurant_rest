@@ -5,8 +5,6 @@ import com.restaurant_rest.entity.OrderItem;
 import com.restaurant_rest.entity.ShoppingCartItem;
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.entity.enums.OrderStatus;
-import com.restaurant_rest.exception.ForbiddenUpdateException;
-import com.restaurant_rest.mapper.AddressMapper;
 import com.restaurant_rest.mapper.OrderMapper;
 import com.restaurant_rest.mapper.ShoppingCartMapper;
 import com.restaurant_rest.model.order.OrderDetails;
@@ -42,8 +40,8 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page, pageSize);
         User user = userService.getUserByEmail(username);
         Page<Order> orderByUser = orderRepo.findOrderByUser(user, pageable);
-        List<OrderShortResponse> orderShortRespons = OrderMapper.MAPPER.listOrderToResponseList(orderByUser.getContent());
-        Page<OrderShortResponse> responsePage = new PageImpl<>(orderShortRespons, pageable, orderByUser.getTotalElements());
+        List<OrderShortResponse> shortResponses = OrderMapper.MAPPER.listOrderToResponseList(orderByUser.getContent());
+        Page<OrderShortResponse> responsePage = new PageImpl<>(shortResponses, pageable, orderByUser.getTotalElements());
         log.info(String.format("getUserOrders() -> exit, return page: %s, elements: %s", page, pageSize));
         return responsePage;
     }
@@ -59,8 +57,8 @@ public class OrderService {
             return order.getStatus();
         } else {
             log.error(String.format("getOrderStatusById() -> order with id: %s, does not belong user: %s", id, username));
-            throw new ForbiddenUpdateException(String.format(
-                    "Замовлення з id: %s не належить користувачу: %s", id, username));
+            throw new EntityNotFoundException(String.format(
+                    "Замовлення з id: %s не знайдено", id));
         }
     }
 
