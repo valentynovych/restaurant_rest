@@ -7,8 +7,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AddressRepo extends JpaRepository<Address, Long>, JpaSpecificationExecutor<Address> {
     List<Address> findAllByUser(User user);
+    Optional<Address> findByIdAndUser(Long id, User user);
+    boolean existsAddressByIdAndUser_Email(Long id, String email);
+    Address getAddressById(Long id);
 }

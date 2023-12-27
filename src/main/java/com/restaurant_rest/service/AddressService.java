@@ -24,7 +24,8 @@ public class AddressService {
     public AddressResponse getAddressById(Long id) {
         log.info("getAddressById() -> start, with id: " + id);
         Optional<Address> byId = addressRepo.findById(id);
-        Address address = byId.orElseThrow(EntityNotFoundException::new);
+        Address address = byId.orElseThrow(() ->
+                new EntityNotFoundException(String.format("Адреси з id: %s не знайдено", id)));
         AddressResponse response = AddressMapper.MAPPER.addressToAddressResponse(address);
         log.info("getAddressById() -> exit, return AddressResponse");
         return response;
@@ -50,22 +51,18 @@ public class AddressService {
         return save.getId();
     }
 
-    public AddressResponse updateUserAddress(Long id, AddressRequest addressRequest) {
+    public AddressResponse updateUserAddress(Long id, AddressRequest addressRequest, String username) {
         log.info("updateUserAddress() -> start, with id: " + id);
-        Optional<Address> byId = addressRepo.findById(id);
-        Address address = byId.orElseThrow(() -> new EntityNotFoundException(
-                String.format("Адреси з id: %s не знайдено", id)));
 
-        User user = address.getUser();
-        List<Address> userAddresses = addressRepo.findAllByUser(user);
-        if (!userAddresses.contains(address)) {
-            log.error("updateUserAddress() -> current user not owner address, with id: " + id);
-            throw new EntityNotFoundException(String.format("Адреси з id: %s не знайдено", id));
+        boolean existsAddressByIdAndUser = addressRepo.existsAddressByIdAndUser_Email(id, username);
+        if (!existsAddressByIdAndUser) {
+            throw new EntityNotFoundException(
+                    String.format("Адреси з id: %s не знайдено", id));
         }
 
+        User user = userService.getUserByEmail(username);
         Address request = AddressMapper.MAPPER.addressRequestToAddress(addressRequest);
         request.setUser(user);
-        request.setId(address.getId());
         Address save = addressRepo.save(request);
         AddressResponse response = AddressMapper.MAPPER.addressToAddressResponse(save);
         log.info("updateUserAddress() -> exit, return updated AddressResponse, id: " + save.getId());
@@ -74,13 +71,12 @@ public class AddressService {
 
     public boolean deleteUserAddress(String username, Long id) {
         log.info("deleteUserAddress() -> start, with id: " + id);
-        Optional<Address> byId = addressRepo.findById(id);
-        Address address = byId.orElseThrow(() -> new EntityNotFoundException(
-                String.format("Адреси з id: %s не знайдено", id)));
-        if (!address.getUser().getUsername().equals(username)) {
-            log.error(String.format("deleteUserAddress() -> user: %s, not owner address with id: %s", username, id));
-            throw new EntityNotFoundException("Немає прав для видалення адреси з id: " + id);
+        boolean existsAddressByIdAndUser = addressRepo.existsAddressByIdAndUser_Email(id, username);
+        if (!existsAddressByIdAndUser) {
+            throw new EntityNotFoundException(
+                    String.format("Адреси з id: %s не знайдено", id));
         }
+        Address address = addressRepo.getAddressById(id);
         addressRepo.delete(address);
         if (!addressRepo.existsById(id)) {
             log.info("deleteUserAddress() -> success delete address with id: " + id);

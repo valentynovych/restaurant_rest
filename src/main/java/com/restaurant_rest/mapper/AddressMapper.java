@@ -17,4 +17,6 @@ public interface AddressMapper {
     List<AddressResponse> addressListToAddressResponseList(List<Address> addresses);
 
     Address addressRequestToAddress(AddressRequest addressRequest);
+
+    AddressRequest addressToAddressRequest(Address address);
 }
