@@ -30,8 +30,7 @@ public class SubcategoryService {
         MainCategory mainCategory = new MainCategory();
         mainCategory.setId(mainCategoryId);
         Page<Subcategory> all = subcategoryRepo.findAll(
-                Specification.where((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("parentCategory"), mainCategory)), pageable);
+                Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("parentCategory"), mainCategory)), pageable);
         List<SubcategoryShortResponse> responseList =
                 SubcategoryMapper.MAPPER.subcategoryListToShortResponseList(all.getContent());
         Page<SubcategoryShortResponse> responsePage = new PageImpl<>(responseList, pageable, all.getTotalElements());
