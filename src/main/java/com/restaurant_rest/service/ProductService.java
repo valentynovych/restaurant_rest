@@ -26,7 +26,7 @@ public class ProductService {
 
     public Page<ProductShortResponse> getAllProducts(int page, int pageSize) {
         log.info(String.format("getAllProducts() -> start, with page: %s, pageSize: %s", page, pageSize));
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.Direction.DESC);
+        Pageable pageable = PageRequest.of(page, pageSize);
         Page<Product> all = productRepo.findAll(pageable);
         List<ProductShortResponse> responseList =
                 ProductMapper.MAPPER.productListToShortResponseList(all.getContent());
