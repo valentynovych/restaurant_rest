@@ -16,6 +16,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -41,12 +43,12 @@ public class ShoppingCartService {
         log.info("getUserCartItems() -> start, with username: " + username);
         User userByEmail = userService.getUserByEmail(username);
         ShoppingCartItem shoppingCartItem = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
-        shoppingCartItem = calculateCartItemPrice(shoppingCartItem);
         shoppingCartItem.setUser(userByEmail);
+        shoppingCartItem = calculateCartItemPrice(shoppingCartItem);
         log.info("getUserCartItems() -> saved new cart item");
         shoppingCartItemRepo.save(shoppingCartItem);
         List<ShoppingCartItem> shoppingCartItems =
-                applyPromotionToShoppingCart(userByEmail.getShoppingCart(), userByEmail.getUserPromotion());
+                applyPromotionToShoppingCart(shoppingCartItemRepo.findAllByUser(userByEmail), userByEmail.getUserPromotion());
         List<ShoppingCartItemResponse> cartItemResponses =
                 ShoppingCartMapper.MAPPER.cartItemListToCartItemResponseList(shoppingCartItems);
         log.info("getUserCartItems() -> exit, return shopping cart, size: " + cartItemResponses.size());
@@ -143,9 +145,10 @@ public class ShoppingCartService {
         if (cartItem.getAdditionalIngredients() != null
                 && !cartItem.getAdditionalIngredients().isEmpty()) {
             for (Product product : cartItem.getAdditionalIngredients()) {
+                ProductResponse productById = productService.getProductById(product.getId());
                 log.info("calculateCartItemPrice() -> cartItem has additional product, id :" + product.getId());
                 BigDecimal itemPrice = cartItem.getItemPrice();
-                itemPrice = itemPrice.add(product.getPrice());
+                itemPrice = itemPrice.add(productById.getPrice());
                 cartItem.setItemPrice(itemPrice);
             }
         }
@@ -201,8 +204,10 @@ public class ShoppingCartService {
                 case PERCENT_ON_BIRTHDAY -> {
                     log.info("applyPromotion() -> PromotionCondition is PERCENT_ON_BIRTHDAY");
                     var orderedUser = item.getUser();
-                    var today = new Date();
-                    if (orderedUser.getUserDetails().getDateOfBirth().equals(today)) {
+                    var today = LocalDate.now();
+                    Date dateOfBirth = orderedUser.getUserDetails().getDateOfBirth();
+                    LocalDate userDate = LocalDate.ofInstant(dateOfBirth.toInstant(), ZoneId.systemDefault());
+                    if (today.getMonth().equals(userDate.getMonth()) && today.getDayOfMonth() == userDate.getDayOfMonth()) {
                         item.setItemSalePrice(calculateSalePriceOnPercent(item.getItemPrice(), promotion.getDiscountAmount()));
                     }
                 }
@@ -277,6 +282,4 @@ public class ShoppingCartService {
         log.info("createGiftOrderItem() -> exit, return new ShoppingCartItem");
         return cartItem;
     }
-
-
 }
