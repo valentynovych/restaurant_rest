@@ -49,9 +49,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Success", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = EmailConfirmRequest.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))})
     })
     @PostMapping("signin")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest email) {
@@ -77,9 +74,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Success", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = EmailConfirmRequest.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))})
     })
     @PostMapping("/confirmEmail")
     public ResponseEntity<?> confirmEmailCode(@Valid @RequestBody EmailConfirm confirm) {
@@ -109,9 +103,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Success", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = EmailConfirmRequest.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))})
     })
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
@@ -137,9 +128,6 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Success", content = {
                     @Content(mediaType = "application/json", schema =
                     @Schema(implementation = EmailConfirmRequest.class))}),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = {
-                    @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = SimpleError.class))})
     })
     @PostMapping("signup")
     public ResponseEntity<?> register(@Valid @RequestBody AuthRequest email) {

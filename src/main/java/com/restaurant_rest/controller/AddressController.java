@@ -91,9 +91,10 @@ public class AddressController {
     })
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUserAddress(@Parameter(example = "1") @PathVariable Long id,
-                                               @Valid @RequestBody AddressRequest addressRequest) {
+                                               @Valid @RequestBody AddressRequest addressRequest,
+                                               Principal principal) {
 
-        AddressResponse response = addressService.updateUserAddress(id, addressRequest);
+        AddressResponse response = addressService.updateUserAddress(id, addressRequest, principal.getName());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

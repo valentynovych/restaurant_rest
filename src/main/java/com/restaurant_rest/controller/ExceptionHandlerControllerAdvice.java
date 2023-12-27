@@ -4,6 +4,7 @@ import com.restaurant_rest.exception.RefreshTokenException;
 import com.restaurant_rest.model.CustomError;
 import com.restaurant_rest.model.SimpleError;
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +45,7 @@ public class ExceptionHandlerControllerAdvice {
     })
     @ExceptionHandler(value = {JwtException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @Hidden
     public ResponseEntity<?> handleTokenAccessException(JwtException ex) {
         return new ResponseEntity<>(new SimpleError(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
