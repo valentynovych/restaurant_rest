@@ -130,6 +130,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>Restaurant_REST_O_Lesyk</finalName>
     </build>
 
 </project>

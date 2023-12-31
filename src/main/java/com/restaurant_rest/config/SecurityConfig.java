@@ -11,6 +11,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
@@ -18,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
+    private final HandlerMappingIntrospector introspector;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,18 +29,21 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/api/v1/auth", "/api/v1/auth/**").permitAll()
                                 .requestMatchers(
-                                        "/v2/api-docs",
-                                        "/v3/api-docs",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources",
-                                        "/swagger-resources/**",
-                                        "/configuration/ui",
-                                        "/configuration/security",
-                                        "/swagger-ui/**",
-                                        "/webjars/**"
-                                ).permitAll()
+                                        mvc().pattern("/api/v1/auth/**"))
+                                .permitAll()
+                                .requestMatchers(
+                                        mvc().pattern("/v2/api-docs"),
+                                        mvc().pattern("/v2/api-docs"),
+                                        mvc().pattern("/v3/api-docs"),
+                                        mvc().pattern("/v3/api-docs/**"),
+                                        mvc().pattern("/swagger-resources"),
+                                        mvc().pattern("/swagger-resources/**"),
+                                        mvc().pattern("/configuration/ui"),
+                                        mvc().pattern("/configuration/security"),
+                                        mvc().pattern("/swagger-ui/**"),
+                                        mvc().pattern("/webjars/**"))
+                                .permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,5 +51,10 @@ public class SecurityConfig {
                         exHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    MvcRequestMatcher.Builder mvc() {
+        return new MvcRequestMatcher.Builder(introspector);
     }
 }

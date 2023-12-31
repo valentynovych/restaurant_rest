@@ -1,0 +1,54 @@
+name: Build & Deploy
+on:
+  push:
+    branches:
+      - master
+      - main
+jobs:
+  build-and-deploy:
+    name: Build and Deploy spring boot application
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.2.0
+        env:
+          MYSQL_ROOT_PASSWORD: GKoTVw1cVs
+          MYSQL_DATABASE: avada_slj_retl02
+          MYSQL_USER: avada_slj_retl02
+          MYSQL_PASSWORD: GKoTVw1cVs
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - name: Verify MySQL connection from host
+        run: |
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port 3306 -uroot -pGKoTVw1cVs -e "SHOW DATABASES"
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java 19
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '19'
+
+      - name: Adding secret
+        env:
+          sendGrid.from: ${{ secrets.SENDER }}
+          sendGrid.apiKey: ${{ secrets.API_KEY }}
+        run: |
+            envsubst < src/main/resources/application_temp.yml > src/main/resources/application.yml
+            cat src/main/resources/application.yml
+
+      - name: Run tests with Maven
+        run: mvn test
+
+      - name: Build application
+        run: |
+          mvn clean
+          mvn package
+
+      - name: Tomcat Deploy
+        run: curl -v -u robot:K4QU@mJ!djX4D8X2 -T /home/runner/work/restaurant_rest/restaurant_rest/target/Restaurant_REST_O_Lesyk.war 'https://slj.avada-media-dev1.od.ua/manager/text/deploy?path=/Restaurant_REST_O_Lesyk&update=true'

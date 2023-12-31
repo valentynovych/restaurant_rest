@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /Restaurant_REST_O_Lesyk
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/avada_slj_retl02?createDatabaseIfNotExist=true
+    username: avada_slj_retl02
+    password: GKoTVw1cVs
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+logging:
+  level:
+    org:
+      springframework: info
+      hibernate: error
+
+upload:
+  path: /home/avada/web/slj.avada-media-dev1.od.ua/projects/Lesyk/Restaurant_admin/uploads
+sendGrid:
+  apiKey: ${apiKey}
+  from: ${sender}
+token:
+  secret: secretForJWTWithoutHS256Encoding
+  lifetime:
+    accessToken: +10M
+    refreshToken: +24h
