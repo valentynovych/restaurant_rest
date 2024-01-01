@@ -125,6 +125,7 @@ public class UserService {
         Optional<User> byEmail = userRepo.findByEmail(email1);
         if (byEmail.isEmpty()) {
             User newUser = new User();
+            newUser.setIsActive(Boolean.TRUE);
             newUser.setEmail(email1);
             newUser.setConfirmEmail(confirmCode);
             userRepo.save(newUser);

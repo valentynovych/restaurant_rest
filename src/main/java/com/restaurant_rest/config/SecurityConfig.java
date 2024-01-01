@@ -33,7 +33,7 @@ public class SecurityConfig {
                                         mvc().pattern("/api/v1/auth/**"))
                                 .permitAll()
                                 .requestMatchers(
-                                        mvc().pattern("/v2/api-docs"),
+                                        mvc().pattern("/"),
                                         mvc().pattern("/v2/api-docs"),
                                         mvc().pattern("/v3/api-docs"),
                                         mvc().pattern("/v3/api-docs/**"),
