@@ -35,7 +35,6 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
     private List<Product> products;
-    private final int page = 0;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +51,7 @@ class ProductServiceTest {
     void getAllProducts() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
-        when(productRepo.findAll(pageable)).thenReturn(productPage);
+        when(productRepo.findAll(any(ProductSpecification.class), any(Pageable.class))).thenReturn(productPage);
         Page<ProductShortResponse> allProducts =
                 productService.getAllProducts(pageable.getPageNumber(), pageable.getPageSize());
         List<ProductShortResponse> content = allProducts.getContent();
@@ -70,8 +69,7 @@ class ProductServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
         ProductCriteria productCriteria = ProductCriteria.builder().build();
-        ProductSpecification productSpecification = new ProductSpecification(productCriteria);
-        when(productRepo.findAll( any(ProductSpecification.class), any(Pageable.class))).thenReturn(productPage);
+        when(productRepo.findAll(any(ProductSpecification.class), any(Pageable.class))).thenReturn(productPage);
         Page<ProductShortResponse> allProducts =
                 productService.getProductsByCriteria(
                         pageable.getPageNumber(), pageable.getPageSize(), productCriteria);
