@@ -21,6 +21,13 @@ logging:
       springframework: info
       hibernate: error
 
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /
+    tagsSorter: alpha
+    operations-sorter: alpha
+
 upload:
   path: /home/avada/web/slj.avada-media-dev1.od.ua/projects/Lesyk/Restaurant_admin/uploads
 sendGrid:
@@ -29,5 +36,5 @@ sendGrid:
 token:
   secret: secretForJWTWithoutHS256Encoding
   lifetime:
-    accessToken: +10M
+    accessToken: +1H
     refreshToken: +24h
