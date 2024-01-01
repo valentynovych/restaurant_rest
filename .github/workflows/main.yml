@@ -36,8 +36,8 @@ jobs:
 
       - name: Adding secret
         env:
-          sendGrid.from: ${{ secrets.SENDER }}
-          sendGrid.apiKey: ${{ secrets.API_KEY }}
+          from: ${{ secrets.SENDER }}
+          apiKey: ${{ secrets.API_KEY }}
         run: |
             envsubst < src/main/resources/application_temp.yml > src/main/resources/application.yml
             cat src/main/resources/application.yml

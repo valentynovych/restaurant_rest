@@ -26,8 +26,11 @@ import io.swagger.v3.oas.annotations.servers.Server;
         ),
         servers = {
                 @Server(
-                        description = "Local",
-                        url = "http://localhost:8080/Restaurant_REST_O_Lesyk")
+                        description = "Server",
+                        url = "/Restaurant_REST_O_Lesyk/"),
+//                @Server(
+//                        description = "Local",
+//                        url = "http://localhost:8080/Restaurant_REST_O_Lesyk")
         }
 )
 @SecurityScheme(
