@@ -25,7 +25,7 @@ upload:
   path: /home/avada/web/slj.avada-media-dev1.od.ua/projects/Lesyk/Restaurant_admin/uploads
 sendGrid:
   apiKey: ${apiKey}
-  from: ${sender}
+  from: ${from}
 token:
   secret: secretForJWTWithoutHS256Encoding
   lifetime:
