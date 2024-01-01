@@ -1,6 +1,10 @@
 package com.restaurant_rest.mapper;
 
+import com.restaurant_rest.entity.MainCategory;
 import com.restaurant_rest.entity.Product;
+import com.restaurant_rest.entity.Subcategory;
+import com.restaurant_rest.model.category.MainCategoryShortResponse;
+import com.restaurant_rest.model.category.SubcategoryShortResponse;
 import com.restaurant_rest.model.product.ProductResponse;
 import com.restaurant_rest.model.product.ProductShort;
 import com.restaurant_rest.model.product.ProductShortResponse;
@@ -26,4 +30,12 @@ public interface ProductMapper {
     List<Product> productShortListToProductList(List<ProductShort> productWishlist);
 
     List<ProductShort> productListToProductShortList(List<Product> productWishlist);
+
+    default MainCategoryShortResponse mainCategoryToMainCategoryShortResponse(MainCategory mainCategory) {
+        return Mappers.getMapper(MainCategoryMapper.class).categoryToShortResponse(mainCategory);
+    }
+
+    default SubcategoryShortResponse subcategoryToSubcategoryShortResponse(Subcategory subcategory) {
+        return Mappers.getMapper(SubcategoryMapper.class).subcategoryToShortResponse(subcategory);
+    }
 }
