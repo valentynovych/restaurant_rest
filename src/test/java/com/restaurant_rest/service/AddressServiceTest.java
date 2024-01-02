@@ -3,6 +3,7 @@ package com.restaurant_rest.service;
 import com.restaurant_rest.entity.Address;
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.mapper.AddressMapper;
+import com.restaurant_rest.model.address.AddressAddRequest;
 import com.restaurant_rest.model.address.AddressRequest;
 import com.restaurant_rest.model.address.AddressResponse;
 import com.restaurant_rest.repositoty.AddressRepo;
@@ -88,7 +89,7 @@ class AddressServiceTest {
 
     @Test
     void createUserAddress() {
-        AddressRequest addressRequest = AddressMapper.MAPPER.addressToAddressRequest(address);
+        AddressAddRequest addressRequest = AddressMapper.MAPPER.addressToAddressAddRequest(address);
         when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
         when(addressRepo.save(any(Address.class))).thenReturn(address);
 

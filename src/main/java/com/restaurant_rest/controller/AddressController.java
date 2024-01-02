@@ -1,6 +1,7 @@
 package com.restaurant_rest.controller;
 
 import com.restaurant_rest.model.SimpleError;
+import com.restaurant_rest.model.address.AddressAddRequest;
 import com.restaurant_rest.model.address.AddressRequest;
 import com.restaurant_rest.model.address.AddressResponse;
 import com.restaurant_rest.service.AddressService;
@@ -68,14 +69,14 @@ public class AddressController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Created",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Long.class))}),
+                            schema = @Schema(example = "{\"id\": 1}"))}),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = SimpleError.class))})
     })
     @PostMapping("/add")
     public ResponseEntity<?> createUserAddress(Principal principal,
-                                               @Valid @RequestBody AddressRequest addressRequest) {
+                                               @Valid @RequestBody AddressAddRequest addressRequest) {
         Long addressId = addressService.createUserAddress(principal.getName(), addressRequest);
         return new ResponseEntity<>(addressId, HttpStatus.CREATED);
     }

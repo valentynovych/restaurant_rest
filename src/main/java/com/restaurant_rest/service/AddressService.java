@@ -3,6 +3,7 @@ package com.restaurant_rest.service;
 import com.restaurant_rest.entity.Address;
 import com.restaurant_rest.entity.User;
 import com.restaurant_rest.mapper.AddressMapper;
+import com.restaurant_rest.model.address.AddressAddRequest;
 import com.restaurant_rest.model.address.AddressRequest;
 import com.restaurant_rest.model.address.AddressResponse;
 import com.restaurant_rest.repositoty.AddressRepo;
@@ -41,9 +42,9 @@ public class AddressService {
         return addressResponses;
     }
 
-    public Long createUserAddress(String username, AddressRequest addressRequest) {
+    public Long createUserAddress(String username, AddressAddRequest addressRequest) {
         log.info("createUserAddress() -> start, with id: " + username);
-        Address address = AddressMapper.MAPPER.addressRequestToAddress(addressRequest);
+        Address address = AddressMapper.MAPPER.addressAddRequestToAddress(addressRequest);
         User userByEmail = userService.getUserByEmail(username);
         address.setUser(userByEmail);
         Address save = addressRepo.save(address);
