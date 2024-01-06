@@ -7,9 +7,11 @@ import com.restaurant_rest.entity.UserDetails;
 import com.restaurant_rest.mapper.ProductMapper;
 import com.restaurant_rest.mapper.UserMapper;
 import com.restaurant_rest.model.authetnticate.JwtResponse;
+import com.restaurant_rest.model.product.ProductShort;
 import com.restaurant_rest.model.user.ProductWishListWrap;
 import com.restaurant_rest.model.user.UserProfileRequest;
 import com.restaurant_rest.model.user.UserProfileResponse;
+import com.restaurant_rest.repositoty.ProductRepo;
 import com.restaurant_rest.repositoty.UserRepo;
 import com.restaurant_rest.utils.JwtTokenUtils;
 import jakarta.persistence.EntityExistsException;
@@ -31,6 +33,7 @@ public class UserService {
     private final JwtTokenUtils tokenUtils;
     private final RefreshTokenService refreshTokenService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final ProductRepo productRepo;
 
     public User getUserByEmail(String email) {
         log.info("getUserByEmail() -> start with email: " + email);
@@ -108,19 +111,23 @@ public class UserService {
         log.info("updateUserProductWishList() -> save user with username: " + username);
         User user = getUserByEmail(username);
         log.info("updateUserProductWishList() -> user product wishlist already size: " + user.getProductWishlist().size());
-        List<Product> productWishlist = ProductMapper.MAPPER.productShortListToProductList(
-                productWishList.getProductWishlist());
-        user.setProductWishlist(productWishlist
+
+        List<Long> listIds = productWishList.getProductWishlist()
+                .stream()
+                .map(ProductShort::getId)
+                .toList();
+        List<Product> byIdIsIn = productRepo.findByIdIsIn(listIds)
                 .stream()
                 .filter(product -> !product.getIsIngredient())
-                .toList());
-        log.info("updateUserProductWishList() -> save user with new product wishlist, size: " + productWishlist.size());
+                .toList();
+
+        user.setProductWishlist(byIdIsIn);
+        log.info("updateUserProductWishList() -> save user with new product wishlist, size: " + byIdIsIn.size());
         User save = userRepo.save(user);
         List<Product> newWishlist = save.getProductWishlist();
-        productWishList.setProductWishlist(ProductMapper.MAPPER.productListToProductShortList(
-                newWishlist));
-        log.info("updateUserProductWishList() -> user product wishlist already size: " + newWishlist.size());
-        log.info("updateUserProductWishList() -> exit");
+        productWishList.setProductWishlist(
+                ProductMapper.MAPPER.productListToProductShortList(newWishlist));
+        log.info("updateUserProductWishList() -> exit, user product wishlist already size: " + newWishlist.size());
         return productWishList;
     }
 
