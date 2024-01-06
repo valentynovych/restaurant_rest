@@ -15,7 +15,7 @@ public class UserProfileRequest {
     private String fullName;
     @NotEmpty(message = "Field is required")
     @Size(max = 50, message = "Field length not more 50 symbol")
-    @Pattern(regexp = "^(380)\\d{8,15}", message = "Phone not valid to pattern 380 XX xxx xx xx")
+    @Pattern(regexp = "^380(50|66|95|99|67|68|96|97|98|63|93|73)[0-9]{7}", message = "Phone not valid to pattern 380 XX xxx xx xx")
     @Schema(example = "380501212345")
     private String phone;
     @NotNull(message = "Field is required")
@@ -27,9 +27,10 @@ public class UserProfileRequest {
     private String facebookUsername;
     @NotEmpty(message = "Field is required")
     @Schema(example = "user@gmail.com")
+    @Pattern(regexp = "^[a-zA-Z0-9+._-]+@([a-zA-z]{2,10}\\.)+[a-zA-z]{2,5}$", message = "Email not valid pattern example@gmail.com")
     private String email;
     @NotEmpty(message = "Field is required")
-    @Pattern(regexp = "([0-9]+[A-Z]+[!/.,?@]+[A-Za-z0-9]*){8,200}", message = "Minimum 8 symbol")
+    @Pattern(regexp = "((?=.*[0-9])(?=.*[A-Z])(?=.*[,./?])).{8,200}", message = "Minimum 8 symbol")
     @Schema(example = "A1!qwerty3")
     private String passwordToChange;
 }
