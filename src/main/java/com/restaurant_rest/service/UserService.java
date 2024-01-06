@@ -116,7 +116,8 @@ public class UserService {
                 .stream()
                 .map(ProductShort::getId)
                 .toList();
-        List<Product> byIdIsIn = productRepo.findByIdIsIn(listIds)
+        List<Product> allByIdIsIn = productRepo.findByIdIn(listIds);
+        List<Product> byIdIsIn = allByIdIsIn
                 .stream()
                 .filter(product -> !product.getIsIngredient())
                 .toList();

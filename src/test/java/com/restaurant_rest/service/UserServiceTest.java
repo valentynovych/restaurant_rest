@@ -154,7 +154,7 @@ class UserServiceTest {
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepo.save(any(User.class))).thenReturn(user);
-        when(productRepo.findByIdIsIn(list)).thenReturn(products);
+        when(productRepo.findByIdIn(list)).thenReturn(products);
         ProductWishListWrap wishListWrap1 = userService.updateUserProductWishList(user.getEmail(), wishListWrap);
 
         assertFalse(wishListWrap1.getProductWishlist().isEmpty());
