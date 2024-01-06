@@ -73,7 +73,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {
                     @Content(mediaType = "application/json", schema =
-                    @Schema(implementation = EmailConfirmRequest.class))}),
+                    @Schema(implementation = JwtResponse.class))}),
     })
     @PostMapping("/confirmEmail")
     public ResponseEntity<?> confirmEmailCode(@Valid @RequestBody EmailConfirm confirm) {

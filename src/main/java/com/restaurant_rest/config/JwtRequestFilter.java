@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) {
 
         String authHeader = request.getHeader("Authorization");
         String username = null;
@@ -45,8 +46,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 log.debug("Lifetime token is expired");
                 exceptionResolver.resolveException(request, response, null, e);
             }
-        } else {
-            exceptionResolver.resolveException(request, response, null, new JwtException("UNAUTHORIZED"));
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
