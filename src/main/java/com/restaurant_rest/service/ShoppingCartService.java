@@ -44,7 +44,7 @@ public class ShoppingCartService {
         User userByEmail = userService.getUserByEmail(username);
         ShoppingCartItem shoppingCartItem = ShoppingCartMapper.MAPPER.requestCartItemToCartItem(itemRequest);
         shoppingCartItem.setUser(userByEmail);
-        shoppingCartItem = calculateCartItemPrice(shoppingCartItem);
+        calculateCartItemPrice(shoppingCartItem);
         log.info("getUserCartItems() -> saved new cart item");
         shoppingCartItemRepo.save(shoppingCartItem);
         List<ShoppingCartItem> shoppingCartItems =

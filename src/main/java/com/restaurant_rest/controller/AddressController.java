@@ -78,7 +78,7 @@ public class AddressController {
     public ResponseEntity<?> createUserAddress(Principal principal,
                                                @Valid @RequestBody AddressAddRequest addressRequest) {
         Long addressId = addressService.createUserAddress(principal.getName(), addressRequest);
-        return new ResponseEntity<>(addressId, HttpStatus.CREATED);
+        return new ResponseEntity<>(String.format("{\"id\": %s}", addressId), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update user address by id")

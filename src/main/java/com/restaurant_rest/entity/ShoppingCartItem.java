@@ -25,12 +25,12 @@ public class ShoppingCartItem {
     @Column(nullable = false)
     private BigDecimal itemPrice;
     private BigDecimal itemSalePrice;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "cart_item_exclusion_ingredients",
             joinColumns = @JoinColumn(name = "cart_item_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> exclusionIngredients;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "cart_item_additional_ingredients",
             joinColumns = @JoinColumn(name = "cart_item_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
