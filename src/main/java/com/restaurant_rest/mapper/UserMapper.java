@@ -14,6 +14,7 @@ public interface UserMapper {
 
     @Mapping(target = "userId", source = "id")
 //    @Mapping(target = "fullName", expression = "java(user.getUserDetails().getFirstName() + \" \" + user.getUserDetails().getLastName())")
+    @Mapping(target = "fullName", source = "userDetails.fullName")
     @Mapping(target = "phone", source = "userDetails.phone")
     @Mapping(target = "dateOfBirth", source = "userDetails.dateOfBirth")
     @Mapping(target = "activeBonuses", source = "userDetails.activeBonuses")
