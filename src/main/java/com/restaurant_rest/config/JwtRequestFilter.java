@@ -45,6 +45,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 log.debug("Lifetime token is expired");
                 exceptionResolver.resolveException(request, response, null, e);
             }
+        } else {
+            exceptionResolver.resolveException(request, response, null, new JwtException("UNAUTHORIZED"));
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
