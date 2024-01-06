@@ -20,6 +20,7 @@ public interface UserMapper {
     @Mapping(target = "activeBonuses", source = "userDetails.activeBonuses")
     @Mapping(target = "amountOfOrders", source = "totalOrders")
     @Mapping(target = "facebookUsername", source = "userDetails.facebookUsername")
+    @Mapping(target = "passwordToChange", source = "userDetails.passwordToChange")
     UserProfileResponse userToUserProfile(User user);
 
     UserShort userToUserShort(User user);
