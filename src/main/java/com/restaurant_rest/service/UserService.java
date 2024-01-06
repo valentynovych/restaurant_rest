@@ -128,6 +128,10 @@ public class UserService {
             newUser.setIsActive(Boolean.TRUE);
             newUser.setEmail(email1);
             newUser.setConfirmEmail(confirmCode);
+            newUser.setUserDetails(new UserDetails());
+            newUser.setTotalOrders(0);
+            newUser.setBonuses(0);
+            newUser.setTotalAmount(0.0);
             userRepo.save(newUser);
         } else {
             throw new EntityExistsException("Користувач уже зареєтрований у системі, скористайтесь входом у додаток");
