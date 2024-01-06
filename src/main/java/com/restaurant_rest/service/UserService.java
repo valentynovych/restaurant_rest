@@ -16,11 +16,13 @@ import com.restaurant_rest.repositoty.UserRepo;
 import com.restaurant_rest.utils.JwtTokenUtils;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,6 +109,7 @@ public class UserService {
         return userProfileResponse;
     }
 
+    @Transactional
     public ProductWishListWrap updateUserProductWishList(String username, ProductWishListWrap productWishList) {
         log.info("updateUserProductWishList() -> save user with username: " + username);
         User user = getUserByEmail(username);
@@ -117,13 +120,13 @@ public class UserService {
                 .map(ProductShort::getId)
                 .toList();
         List<Product> allByIdIsIn = productRepo.findByIdIn(listIds);
-        List<Product> byIdIsIn = allByIdIsIn
+        List<Product> exclusiveIngredients = allByIdIsIn
                 .stream()
                 .filter(product -> !product.getIsIngredient())
                 .toList();
 
-        user.setProductWishlist(byIdIsIn);
-        log.info("updateUserProductWishList() -> save user with new product wishlist, size: " + byIdIsIn.size());
+        user.setProductWishlist(new ArrayList<>(exclusiveIngredients));
+        log.info("updateUserProductWishList() -> save user with new product wishlist, size: " + exclusiveIngredients.size());
         User save = userRepo.save(user);
         List<Product> newWishlist = save.getProductWishlist();
         productWishList.setProductWishlist(
