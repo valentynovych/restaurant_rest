@@ -4,10 +4,8 @@ import com.restaurant_rest.entity.MainCategory;
 import com.restaurant_rest.entity.Product;
 import com.restaurant_rest.entity.Subcategory;
 import com.restaurant_rest.model.product.ProductCriteria;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -20,7 +18,7 @@ public class ProductSpecification implements Specification<Product> {
     private final ProductCriteria productCriteria;
 
     @Override
-    public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(Root<Product> root, @NonNull CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
 
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.equal(root.get("isIngredient"), productCriteria.isIngredients()));
@@ -28,7 +26,9 @@ public class ProductSpecification implements Specification<Product> {
         if (productCriteria.isIngredients() && productCriteria.getByCategoryId() != null) {
             MainCategory mainCategory = new MainCategory();
             mainCategory.setId(productCriteria.getByCategoryId());
-            predicates.add(criteriaBuilder.equal(root.get("forMainCategory"), mainCategory));
+            Join<MainCategory, Product> categoryProductJoin = root.join("forMainCategory");
+            Expression<String> expression = categoryProductJoin.get("id");
+            predicates.add(criteriaBuilder.equal(expression, mainCategory.getId()));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }
 
