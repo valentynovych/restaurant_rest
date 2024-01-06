@@ -10,6 +10,7 @@ import com.restaurant_rest.model.authetnticate.JwtResponse;
 import com.restaurant_rest.model.user.ProductWishListWrap;
 import com.restaurant_rest.model.user.UserProfileRequest;
 import com.restaurant_rest.model.user.UserProfileResponse;
+import com.restaurant_rest.repositoty.ProductRepo;
 import com.restaurant_rest.repositoty.UserRepo;
 import com.restaurant_rest.utils.JwtTokenUtils;
 import jakarta.persistence.EntityExistsException;
@@ -22,10 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +40,8 @@ class UserServiceTest {
     private RefreshTokenService refreshTokenService;
     @Mock
     private UserDetailsServiceImpl userDetailsService;
+    @Mock
+    private ProductRepo productRepo;
     @InjectMocks
     private UserService userService;
     private User user;
@@ -140,17 +140,25 @@ class UserServiceTest {
 
     @Test
     void updateUserProductWishList() {
-        List<Product> products = List.of(new Product(), new Product(), new Product());
+        List<Product> products = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Product product = new Product();
+            product.setId((long) i);
+            product.setIsIngredient(Boolean.FALSE);
+            products.add(product);
+        }
+        List<Long> list = products.stream().map(Product::getId).toList();
         ProductWishListWrap wishListWrap = new ProductWishListWrap();
         wishListWrap.setProductWishlist(ProductMapper.MAPPER.productListToProductShortList(products));
         user.setProductWishlist(products);
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(userRepo.save(any(User.class))).thenReturn(user);
+        when(productRepo.findByIdIsIn(list)).thenReturn(products);
         ProductWishListWrap wishListWrap1 = userService.updateUserProductWishList(user.getEmail(), wishListWrap);
 
         assertFalse(wishListWrap1.getProductWishlist().isEmpty());
-        assertEquals(3, wishListWrap1.getProductWishlist().size());
+        assertEquals(5, wishListWrap1.getProductWishlist().size());
     }
 
     @Test
