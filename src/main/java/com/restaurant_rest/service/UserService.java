@@ -110,7 +110,10 @@ public class UserService {
         log.info("updateUserProductWishList() -> user product wishlist already size: " + user.getProductWishlist().size());
         List<Product> productWishlist = ProductMapper.MAPPER.productShortListToProductList(
                 productWishList.getProductWishlist());
-        user.setProductWishlist(productWishlist);
+        user.setProductWishlist(productWishlist
+                .stream()
+                .filter(product -> !product.getIsIngredient())
+                .toList());
         log.info("updateUserProductWishList() -> save user with new product wishlist, size: " + productWishlist.size());
         User save = userRepo.save(user);
         List<Product> newWishlist = save.getProductWishlist();
