@@ -1,20 +1,22 @@
 package com.restaurant_rest.service;
 
-import com.restaurant_rest.entity.Order;
-import com.restaurant_rest.entity.ShoppingCartItem;
-import com.restaurant_rest.entity.User;
+import com.restaurant_rest.entity.*;
 import com.restaurant_rest.entity.enums.OrderStatus;
 import com.restaurant_rest.entity.enums.PaymentMethod;
+import com.restaurant_rest.mapper.AddressMapper;
 import com.restaurant_rest.mapper.ShoppingCartMapper;
 import com.restaurant_rest.model.address.AddressRequest;
 import com.restaurant_rest.model.order.OrderDetails;
 import com.restaurant_rest.model.order.OrderResponse;
 import com.restaurant_rest.model.order.OrderShortResponse;
+import com.restaurant_rest.repositoty.AddressRepo;
+import com.restaurant_rest.repositoty.OrderItemRepo;
 import com.restaurant_rest.repositoty.OrderRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -41,6 +43,10 @@ class OrderServiceTest {
     private OrderRepo orderRepo;
     @Mock
     private UserService userService;
+    @Mock
+    private AddressRepo addressRepo;
+    @Mock
+    private OrderItemRepo orderItemRepo;
     @InjectMocks
     private OrderService orderService;
     private List<ShoppingCartItem> shoppingCartItems;
@@ -154,9 +160,15 @@ class OrderServiceTest {
         shoppingCartItems.get(2).setItemSalePrice(new BigDecimal(120));
         user.setShoppingCart(shoppingCartItems);
         user.setUserPromotion(new ArrayList<>());
+        Address address = AddressMapper.MAPPER.addressRequestToAddress(orderDetails.getAddress());
+        List<OrderItem> orderItems = ShoppingCartMapper.MAPPER.cartItemListToOrderItemList(user.getShoppingCart());
+
 
         when(userService.getUserByEmail(user.getEmail())).thenReturn(user);
+        when(addressRepo.save(any(Address.class))).thenReturn(address);
+        when(orderItemRepo.saveAll(ArgumentMatchers.<OrderItem>anyList())).thenReturn(orderItems);
         when(orderRepo.save(any(Order.class))).thenReturn(order);
+
         OrderResponse orderFromShoppingCart = orderService.createOrderFromShoppingCart(user.getUsername(), orderDetails);
 
         assertEquals(order.getUser().getId(), orderFromShoppingCart.getUser().getUserId());
