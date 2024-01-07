@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class AddressRequest {
     @Schema(example = "1")
-    @NotNull(message = "Обов'язкове поле")
     @Max(value = Long.MAX_VALUE, message = "Значення поля не більше {value} символів")
     private Long id;
     @Schema(example = "Мій дім")

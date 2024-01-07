@@ -10,11 +10,19 @@ import com.restaurant_rest.mapper.ShoppingCartMapper;
 import com.restaurant_rest.model.order.OrderDetails;
 import com.restaurant_rest.model.order.OrderResponse;
 import com.restaurant_rest.model.order.OrderShortResponse;
+import com.restaurant_rest.repositoty.AddressRepo;
+import com.restaurant_rest.repositoty.OrderItemRepo;
 import com.restaurant_rest.repositoty.OrderRepo;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.persistence.PersistenceUnits;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +34,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +43,9 @@ public class OrderService {
 
     private final OrderRepo orderRepo;
     private final UserService userService;
+    private final ShoppingCartService shoppingCartService;
+    private final AddressRepo addressRepo;
+    private final OrderItemRepo orderItemRepo;
 
     public Page<OrderShortResponse> getUserOrders(String username, int page, int pageSize) {
         log.info(String.format("getUserOrders() -> start with page: %s, pageSize: %s", page, pageSize));
@@ -75,8 +87,10 @@ public class OrderService {
         List<OrderItem> orderItems = ShoppingCartMapper.MAPPER.cartItemListToOrderItemList(shoppingCart);
 
         Order order = OrderMapper.MAPPER.orderDetailsToOrder(orderDetails);
+        order.setAddress(addressRepo.save(order.getAddress()));
         order.setUser(userByEmail);
-        orderItems.forEach(orderItem -> orderItem.setOrder(order));
+        order.getOrderItems().forEach(orderItem -> orderItem.setOrder(order));
+        order.setOrderItems(new HashSet<>(orderItemRepo.saveAll(orderItems)));
         order.setDatetimeOfCreate(Instant.now());
         order.setTotalAmount(calculateTotalAmountShoppingCart(shoppingCart));
         order.setUsedPromotion(new HashSet<>(userByEmail.getUserPromotion()));
@@ -84,6 +98,7 @@ public class OrderService {
         order.setStatus(OrderStatus.NEW);
 
         Order save = orderRepo.save(order);
+        shoppingCartService.clearShoppingCart(username);
         OrderResponse orderResponse = OrderMapper.MAPPER.orderToOrderResponse(save);
         log.info("createOrderFromShoppingCart() -> exit, return saved order with id : " + orderResponse.getId());
         return orderResponse;

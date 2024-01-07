@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -35,7 +36,7 @@ public class Order {
     private Integer accruedBonuses;
     @Enumerated(EnumType.STRING)
     private PaymentMethod payment;
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     private Address address;
     private Integer deliveryTime;
     @Column(length = 50)
@@ -47,5 +48,5 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     private Staff orderPlaced;
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<OrderItem> orderItems;
+    private Set<OrderItem> orderItems = new HashSet<>();
 }

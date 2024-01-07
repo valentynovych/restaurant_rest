@@ -100,17 +100,17 @@ public class ShoppingCartService {
                     String.format("Елемент корзини з id: %s не знайдено", id));
         } else {
             ShoppingCartItem shoppingCartItem = shoppingCart.get();
-            shoppingCartItem.setAdditionalIngredients(
+            shoppingCartItem.setAdditionalIngredients(new ArrayList<>(
                     itemRequest.getAdditionalIngredients()
                             .stream()
                             .map(ShoppingCartMapper.MAPPER::productShortToProduct)
-                            .toList());
+                            .toList()));
 
-            shoppingCartItem.setExclusionIngredients(
+            shoppingCartItem.setExclusionIngredients(new ArrayList<>(
                     itemRequest.getExclusionIngredients()
                             .stream()
                             .map(ShoppingCartMapper.MAPPER::productShortToProduct)
-                            .toList());
+                            .toList()));
             log.info(String.format("changeCompositionItemCart() -> save edit cart item with id: %s", id));
             ShoppingCartItem save = shoppingCartItemRepo.save(shoppingCartItem);
             ShoppingCartItemResponse itemResponse = ShoppingCartMapper.MAPPER.cartItemToCartItemResponse(save);
