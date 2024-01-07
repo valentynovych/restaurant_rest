@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -47,6 +46,8 @@ class OrderServiceTest {
     private AddressRepo addressRepo;
     @Mock
     private OrderItemRepo orderItemRepo;
+    @Mock
+    ShoppingCartService shoppingCartService;
     @InjectMocks
     private OrderService orderService;
     private List<ShoppingCartItem> shoppingCartItems;
@@ -170,6 +171,7 @@ class OrderServiceTest {
         when(orderRepo.save(any(Order.class))).thenReturn(order);
 
         OrderResponse orderFromShoppingCart = orderService.createOrderFromShoppingCart(user.getUsername(), orderDetails);
+        verify(shoppingCartService).clearShoppingCart(user.getUsername());
 
         assertEquals(order.getUser().getId(), orderFromShoppingCart.getUser().getUserId());
         assertEquals(order.getTotalAmount(), orderFromShoppingCart.getTotalAmount());
