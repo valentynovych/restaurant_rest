@@ -9,6 +9,7 @@ import com.restaurant_rest.model.shopping_cart.ShoppingCartItemRequest;
 import com.restaurant_rest.model.shopping_cart.ShoppingCartItemResponse;
 import com.restaurant_rest.model.user.UserShort;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -40,4 +41,8 @@ public interface ShoppingCartMapper {
     ShoppingCartItem requestCartItemToCartItem(ShoppingCartItemRequest itemRequest);
 
     List<OrderItem> cartItemListToOrderItemList(List<ShoppingCartItem> shoppingCart);
+
+    @Mapping(target = "itemSalePrice", source = "itemSalePrice")
+    @Mapping(target = "isGiftProduct", source = "giftProduct")
+    OrderItem cartItemRequestToOrderItem(ShoppingCartItem cartItem);
 }

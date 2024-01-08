@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,7 +93,14 @@ public class UserService {
     public UserProfileResponse updateUserProfile(String username, UserProfileRequest profileRequest) {
         log.info("updateUserProfile() -> start with username: " + username);
         User user = getUserByEmail(username);
-        UserDetails userDetails = user.getUserDetails();
+        UserDetails userDetails;
+        if (user.getUserDetails() != null) {
+            userDetails = user.getUserDetails();
+        } else {
+            userDetails = new UserDetails();
+            userDetails.setRegistrationDate(new Date());
+            userDetails.setActiveBonuses(0);
+        }
         userDetails.setFullName(profileRequest.getFullName());
         userDetails.setPhone(profileRequest.getPhone());
         userDetails.setDateOfBirth(profileRequest.getDateOfBirth());
@@ -142,10 +150,14 @@ public class UserService {
             newUser.setIsActive(Boolean.TRUE);
             newUser.setEmail(email1);
             newUser.setConfirmEmail(confirmCode);
-            newUser.setUserDetails(new UserDetails());
+            UserDetails userDetails = new UserDetails();
+            userDetails.setRegistrationDate(new Date());
+            userDetails.setActiveBonuses(0);
+            newUser.setUserDetails(userDetails);
             newUser.setTotalOrders(0);
             newUser.setBonuses(0);
             newUser.setTotalAmount(0.0);
+
             userRepo.save(newUser);
         } else {
             throw new EntityExistsException("Користувач уже зареєтрований у системі, скористайтесь входом у додаток");

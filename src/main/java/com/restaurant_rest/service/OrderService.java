@@ -89,8 +89,9 @@ public class OrderService {
         Order order = OrderMapper.MAPPER.orderDetailsToOrder(orderDetails);
         order.setAddress(addressRepo.save(order.getAddress()));
         order.setUser(userByEmail);
-        order.getOrderItems().forEach(orderItem -> orderItem.setOrder(order));
+        //orderItems.forEach(orderItem -> orderItem.setOrder(order));
         order.setOrderItems(new HashSet<>(orderItemRepo.saveAll(orderItems)));
+        order.getOrderItems().forEach(orderItem -> orderItem.setOrder(order));
         order.setDatetimeOfCreate(Instant.now());
         order.setTotalAmount(calculateTotalAmountShoppingCart(shoppingCart));
         order.setUsedPromotion(new HashSet<>(userByEmail.getUserPromotion()));

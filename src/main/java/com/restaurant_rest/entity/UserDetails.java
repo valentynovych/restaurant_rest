@@ -16,7 +16,7 @@ public class UserDetails {
     private String firstName;
     @Column(length = 50)
     private String lastName;
-    @Column(length = 15, unique = true, nullable = false)
+    @Column(length = 15, unique = true)
     private String phone;
     @Column(nullable = false)
     private Date dateOfBirth;
